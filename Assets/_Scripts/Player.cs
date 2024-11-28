@@ -14,6 +14,7 @@ public class Player : ICardManager
     //≥ı ºªØ
     public void AddCard(FearCard card)
     {
+        card.isUsed = false;
         handingCards.Add(card);
     }
 
@@ -24,7 +25,6 @@ public class Player : ICardManager
         {
             if (card != null)
             {
-                card.isUsed = false;
                 AddCard(card);
 
             }
@@ -35,7 +35,7 @@ public class Player : ICardManager
     public void RemoveCard(FearCard card)
     {
         card.isUsed = true;
-        //handingCards.Remove(card);
+        handingCards.Remove(card);
         //usedCards.Add(card);
     }
 

@@ -617,11 +617,11 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4446230838145423784}
   - {fileID: 214665196316555207}
   - {fileID: 2914748550410493024}
   - {fileID: 8535987822908397539}
   - {fileID: 8162333333162901382}
-  - {fileID: 4446230838145423784}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &9106653117141985594
@@ -636,6 +636,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 426ed4f8cd815794f8884143a6049f89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originalParent: {fileID: 0}
+  areaParent: {fileID: 0}
+  targetPosition: {x: 0, y: 0, z: 0}
   titleTMP: {fileID: 0}
   pointTMP: {fileID: 0}
   descriptionTMP: {fileID: 0}

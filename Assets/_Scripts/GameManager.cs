@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,12 +11,15 @@ public class GameManager : MonoBehaviour
 
     public List<FearCard> playDecks = new List<FearCard>();
     public List<FearCard> monsterDecks = new List<FearCard>();
-    public List<GameItem> itemTemplete = new List<GameItem>();
+    public List<GameItem> itemPool = new List<GameItem>();
     public Transform[] cardSlots;
+    public Transform[] itemSlots;
 
     public GameObject cardPrefab;
+    public GameObject itemPrefab;
     public CardTargetArea cardTargetArea;
-    public Button cardConfirmBtn;
+    public Button confirmBtn;
+    public Button finishBtn;
 
     private enum GamePhase { Start, Cover, Item, Resolve, End }
     private GamePhase currentPhase;
@@ -33,7 +37,6 @@ public class GameManager : MonoBehaviour
     private void InitGame()
     {
         currentRound = 1;
-        currentPhase = GamePhase.Start;
 
         // 初始化卡牌池
         InitDecks(player, monster, 1, 5);
@@ -45,11 +48,13 @@ public class GameManager : MonoBehaviour
 
         // 初始化双方道具
         InitGameItems(player, monster);
+        //RefreshPlayerItemUI(player, null);
 
-        ChangeToNextPhase();
+        currentPhase = GamePhase.Start;
+        RunPhase();
     }
-    #region 阶段逻辑
-    private void ChangeToNextPhase()
+
+    private void RunPhase()
     {
         switch (currentPhase)
         {
@@ -71,44 +76,55 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    #region 回合开始
     private void StartRound()
     {
         Debug.Log($"回合 {currentRound} 开始");
 
         //发牌
         //第四回合开始双方各发2个道具
-        if (currentRound == 4)
+        if (currentRound == 3)
         {
             Debug.Log("双方获得道具");
             // 增加道具逻辑（待扩展）
             for (int i = 0; i < 2; i++)
             {
-                player.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+                player.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
             }
             for (int i = 0; i < 2; i++)
             {
-                monster.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+                monster.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
             }
         }
         //下一阶段
         currentPhase = GamePhase.Cover;
-        ChangeToNextPhase();
+        RunPhase();
     }
+    #endregion
 
+    #region 盖牌阶段
     private void CoverPhase()
     {
         Debug.Log("盖牌阶段开始");
 
-        cardConfirmBtn.image.color = Color.white;
-        //玩家确认
-        cardConfirmBtn.onClick.AddListener(OnClickedConfirmButton);
-
+        EnableButton(confirmBtn, true, OnClickedConfirmButton);
+        EnableButton(finishBtn, true, OnClickedFinishButton);
     }
 
-    private void OnClickedConfirmButton()
+    private void CoverPhaseConfirm()
     {
         //玩家选卡
         playerSelectedCard = cardTargetArea.GetAreaCard();
+        
+        EnableButton(confirmBtn, false, null);
+    }
+
+    private void CoverPhaseRun()
+    {
+        //if(confirmBtn.interactable == true)
+        //{
+        //    CoverPhaseConfirm();
+        //}
 
         if (playerSelectedCard == null)
         {
@@ -123,37 +139,310 @@ public class GameManager : MonoBehaviour
         monsterSelectedCard = monsterCards[Random.Range(0, monsterCards.Count)];
         Debug.Log($"敌人选择了卡牌：{monsterSelectedCard.cardName}");
 
-        // 禁用“确认”按钮，清除监听
-        cardConfirmBtn.onClick.RemoveListener(OnClickedConfirmButton);
-        cardConfirmBtn.image.color = Color.gray;
 
-        
+        EnableButton(confirmBtn, false, null);
+        EnableButton(finishBtn, false, null);
 
         // 进入下一阶段
-        //currentPhase = GamePhase.Item;
+        currentPhase = GamePhase.Item;
 
-        //测试结算
-        currentPhase = GamePhase.Resolve;
-
-        ChangeToNextPhase();
+        RunPhase();
     }
 
+    public FearCard GetPlayerSelectedCard()
+    {
+        return playerSelectedCard;
+    }
+
+    public FearCard GetMonsterSelectedCard()
+    {
+        return monsterSelectedCard;
+    }
+
+    #endregion
+
+    #region 道具阶段
     private void ItemPhase()
     {
         Debug.Log("道具阶段开始");
 
-        //判断先手
+        // 确定先手规则：假设偶数回合敌人先手，奇数回合玩家先手
+        bool isPlayerTurn = currentRound % 2 != 0;
 
-        //玩家先手，循环选择道具，道具生效
-        //玩家确认用完
+        EnableButton(finishBtn, true, OnClickedFinishButton);
+        // 开始道具使用阶段
+        StartCoroutine(HandleItemPhase(isPlayerTurn));
 
-        //敌人先手，循环选择道具，生效
-        //下一阶段
+        // 显示道具 UI
+        RefreshPlayerItemUI(player);
+
+        //if(isPlayerTurn)
+        //{
+        //    // 启用确认按钮
+        //    EnableConfirmButton(confirmBtn, true, OnClickedConfirmButton);
+        //    EnableConfirmButton(finishBtn, true, OnClickedFinishButton);
+
+        //    while (finishBtn.interactable) continue;
+
+        //    mon.IntoItemPhase();
+        //}
+        //else
+        //{
+        //    mon.IntoItemPhase();
+
+        //    // 启用确认按钮
+        //    EnableConfirmButton(confirmBtn, true, OnClickedConfirmButton);
+        //    EnableConfirmButton(finishBtn, true, OnClickedFinishButton);
+        //}
+
     }
 
+    private IEnumerator HandleItemPhase(bool isPlayerTurn)
+    {
+        Debug.Log($"{(isPlayerTurn ? "玩家" : "敌人")}先手开始道具阶段");
+        while (true)
+        {
+            if (isPlayerTurn)
+            {
+                yield return StartCoroutine(HandlePlayerItemUsage());
+                if (player.GetCards().Count == 0) break; // 玩家没有道具则结束
+            }
+            else
+            {
+                yield return StartCoroutine(HandleEnemyItemUsage());
+                if (monster.GetCards().Count == 0) break; // 敌人没有道具则结束
+            }
+
+        }
+    }
+
+    private IEnumerator HandlePlayerItemUsage()
+    {
+        Debug.Log("玩家的道具回合");
+
+        // 等待玩家选择道具
+        bool itemUsed = false;
+        GameItem selectedItem = null;
+        // 启用确认按钮
+        EnableButton(confirmBtn, true, () =>
+        {
+            selectedItem = cardTargetArea.GetAreaItem(); // 获取玩家选择的道具
+            if (selectedItem != null)
+            {
+                Debug.Log($"玩家使用道具：{selectedItem.itemName}");
+                selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+                player.RemoveItem(selectedItem);
+                itemUsed = true;
+            }
+        });
+
+        // 等待玩家确认
+        yield return new WaitUntil(() => itemUsed);
+        EnableButton(confirmBtn, false, null);
+    }
+
+    //private IEnumerator HandleEnemyItemUsage()
+    //{
+    //    Debug.Log("敌人的道具回合");
+
+    //    List<GameItem> enemyItems = monster.GetItems();
+    //    if (enemyItems.Count > 0)
+    //    {
+    //        GameItem selectedItem = enemyItems[Random.Range(0, enemyItems.Count)];
+    //        Debug.Log($"敌人使用道具：{selectedItem.itemName}");
+    //        selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+    //        monster.RemoveItem(selectedItem);
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("敌人没有可用的道具");
+    //    }
+
+    //    // 模拟敌人操作的延迟
+    //    yield return new WaitForSeconds(1f);
+    //}
+    private IEnumerator HandleEnemyItemUsage()
+    {
+        Debug.Log("敌人的道具回合");
+
+        List<GameItem> enemyItems = monster.GetItems();
+        if (enemyItems.Count > 0)
+        {
+            GameItem selectedItem = null;
+
+            // AI选择道具的逻辑
+            selectedItem = ChooseEnemyItem(enemyItems);
+
+            if (selectedItem != null)
+            {
+                Debug.Log($"敌人使用道具：{selectedItem.itemName}");
+                selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+                monster.RemoveItem(selectedItem);
+            }
+            else
+            {
+                Debug.Log("敌人没有合适的道具");
+            }
+        }
+        else
+        {
+            Debug.Log("敌人没有可用的道具");
+        }
+
+        // 模拟敌人操作的延迟
+        yield return new WaitForSeconds(1f);
+    }
+
+    private GameItem ChooseEnemyItem(List<GameItem> enemyItems)
+    {
+        // 假设敌人的道具策略1：窥视后作出决策
+        GameItem itemToUse = null;
+
+        GameItem peekItem = enemyItems.Find(item => item.itemName == "窥视"); // 找到窥视道具
+        if (peekItem != null)
+        {
+            // 使用窥视道具
+            itemToUse = peekItem;
+            Debug.Log("敌人使用窥视道具");
+
+            // 依据敌人的策略决定使用何种道具
+            GameItem bestCounterItem = EvaluatePeekStrategy(peekItem);
+            if (bestCounterItem != null)
+            {
+                itemToUse = bestCounterItem;
+            }
+        }
+        else
+        {
+            // 如果没有窥视道具，按照其他策略选择道具
+            itemToUse = SelectOtherEnemyItems(enemyItems);
+        }
+
+        return itemToUse;
+    }
+
+    private GameItem EvaluatePeekStrategy(GameItem peekItem)
+    {
+        // 基于窥视结果，敌人选择最合适的道具
+        if (peekItem != null)
+        {
+            // 根据对方卡牌点数来选择合适的道具策略
+            int playerCardValue = playerSelectedCard.point; // 假设有获取玩家当前卡牌点数的函数
+            int monsterCardValue = monsterSelectedCard.point; // 假设有获取敌人当前卡牌点数的函数
+
+            if (playerCardValue > monsterCardValue)
+            {
+                // 根据差距选择是否打出壮胆、偷换或强迫
+                return ChooseBoostOrSwap(playerCardValue, monsterCardValue);
+            }
+            else
+            {
+                // 根据差距选择悔棋道具或跳过
+                return ChooseRewindOrSkip();
+            }
+        }
+
+        return null;
+    }
+
+    private GameItem ChooseBoostOrSwap(int playerCardValue, int monsterCardValue)
+    {
+        // 选择壮胆或偷换策略
+        if (Mathf.Abs(playerCardValue - monsterCardValue) <= 3)
+        {
+            return monster.GetItems().Find(item => item.itemName == "壮胆"); // 找到壮胆道具
+        }
+        else
+        {
+            return monster.GetItems().Find(item => item.itemName == "偷换"); // 找到偷换道具
+        }
+    }
+
+    private GameItem ChooseRewindOrSkip()
+    {
+        // 如果没有合适的道具，则选择悔棋或跳过
+        Debug.Log("敌人没有合适的道具, 选择道具(悔棋)");
+        return monster.GetItems().Find(item => item.itemName == "悔棋"); // 找到悔棋道具
+    }
+
+    private GameItem SelectOtherEnemyItems(List<GameItem> enemyItems)
+    {
+        // 选择其他非窥视道具的策略，例如随机选择
+        Debug.Log("敌人随机选择道具");
+        return enemyItems[Random.Range(0, enemyItems.Count)];
+    }
+
+    public GameItem MonsterEvaluateItem(Monster monster)
+    {
+        List<GameItem> items = monster.GetItems();
+        List<string> strings = new List<string>();
+        GameItem evaluateItem;
+        for (int i = 0; i < items.Count; i++)
+        {
+            strings.Add(items[i].itemName);
+        }
+
+        if (items.Contains(new PeekItem()))
+        {
+            evaluateItem = new PeekItem();
+
+        }
+        else if (items.Contains(new ForceChangeCardItem()))
+        {
+            evaluateItem = new ForceChangeCardItem();
+        }
+        else
+        {
+            evaluateItem = null;
+        }
+
+        return evaluateItem;
+    }
+
+    private void ItemPhaseConfirm()
+    {
+        //playerSelectedCard = cardTargetArea.GetAreaCard();
+        EnableButton(confirmBtn, false, null);
+    }
+
+    private void ItemPhaseRun()
+    {
+        Debug.Log("玩家确认结束道具使用阶段");
+
+        // 禁用确认按钮
+        EnableButton(confirmBtn, false, null);
+        EnableButton(finishBtn, false, null);
+
+        // 清理道具 UI
+        RefreshPlayerItemUI(player, null);
+
+        // 进入下一阶段
+        currentPhase = GamePhase.Resolve;
+        RunPhase();
+    }
+
+    private void HandleItemClicked(GameItem item)
+    {
+        Debug.Log($"玩家点击使用道具：{item.itemName}");
+
+        // 执行道具效果
+        List<FearCard> cards = item.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+        playerSelectedCard = cards[0];
+        monsterSelectedCard = cards[1];
+
+        // 移除玩家道具
+        player.RemoveItem(item);
+
+        // 更新 UI
+        RefreshPlayerItemUI(player);
+    }
+    #endregion
+
+    #region 结算阶段
     private void ResolvePhase()
     {
         Debug.Log("结算阶段开始");
+        Debug.Log($"玩家选择的卡为({playerSelectedCard.cardName})，点数为({playerSelectedCard.point})");
 
         int playerPoint = playerSelectedCard.point;
         int monsterPoint = monsterSelectedCard.point;
@@ -174,15 +463,17 @@ public class GameManager : MonoBehaviour
             player.IncreaseFearValue(1);
             Debug.Log($"平局，双方都增加1恐惧值({player.GetFearValue()}):({monster.GetFearValue()})");
         }
+
         player.UseCard(playerSelectedCard);
         monster.UseCard(monsterSelectedCard);
+
         cardTargetArea.ClearReadyToUseCard();
 
         RefreshPlayerCardUI(player);
 
         // 进入下一阶段
         currentPhase = GamePhase.End;
-        ChangeToNextPhase();
+        RunPhase();
 
         //获取双方点数
         //比点，小的一方增加恐惧值
@@ -209,7 +500,7 @@ public class GameManager : MonoBehaviour
             // 进入下一回合
             currentRound++;
             currentPhase = GamePhase.Start;
-            ChangeToNextPhase();
+            RunPhase();
         }
     }
     #endregion
@@ -266,6 +557,9 @@ public class GameManager : MonoBehaviour
 
     public void RefreshPlayerCardUI(Player player)
     {
+        //隐藏道具UI，然后显示卡牌UI
+        HidePlayerItemUI();
+
         List<FearCard> cards = player.GetCards();
         if (cards.Count == 0)
         {
@@ -284,7 +578,7 @@ public class GameManager : MonoBehaviour
                 cardUI = Instantiate(cardPrefab, cardSlots[i]).GetComponent<FearCardUI>();
             }
 
-            // 设置卡牌数据
+            // 设置卡牌UI数据
             cardUI.SetUI(card, cardSlots[i]);
 
             // 根据卡牌状态显示或隐藏 UI
@@ -300,40 +594,160 @@ public class GameManager : MonoBehaviour
                 cardUI.gameObject.transform.localPosition = Vector3.zero;
             }
         }
+
+    }
+
+    public void HidePlayerCardUI()
+    {
+        for (int i = 0; i < cardSlots.Length; i++)
+        {
+            if (cardSlots[i].childCount == 0)
+            {
+                continue;
+            }
+            Destroy(cardSlots[i].GetChild(0).gameObject);
+        }
+
+    }
+
+    public void RefreshPlayerItemUI(Player player)
+    {
+        //隐藏卡牌UI，然后显示道具UI
+        HidePlayerCardUI();
+
+        List<GameItem> items = player.GetItems();
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < items.Count; ++i)
+        {
+            GameItem item = items[i];
+
+            // 获取当前卡槽中的 GameIteUI（如果没有，实例化一个）
+            GameItemUI itemUI = itemSlots[i].GetComponentInChildren<GameItemUI>();
+            if (itemUI == null)
+            {
+                Debug.Log($"实例化第 {i} 张牌的 UI：{item.itemName}");
+                itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
+            }
+
+            // 设置道具UI数据
+            itemUI.gameObject.transform.localPosition = Vector3.zero;
+            itemUI.SetUI(item, itemSlots[i], HandleItemClicked);
+
+        }
+    }
+
+    public void RefreshPlayerItemUI(Player player, System.Action<GameItem> callback)
+    {
+        HidePlayerCardUI();
+
+        List<GameItem> items = player.GetItems();
+        if (items.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < items.Count; ++i)
+        {
+            GameItem item = items[i];
+
+            // 获取当前卡槽中的 GameIteUI（如果没有，实例化一个）
+            GameItemUI itemUI = itemSlots[i].GetComponentInChildren<GameItemUI>();
+            if (itemUI == null)
+            {
+                Debug.Log($"实例化第 {i} 张牌的 UI：{item.itemName}");
+                itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
+            }
+
+            // 设置道具UI数据
+            itemUI.gameObject.transform.localPosition = Vector3.zero;
+            itemUI.SetUI(item, itemSlots[i], callback);
+
+        }
+    }
+
+    public void HidePlayerItemUI()
+    {
+        for (int i = 0; i < itemSlots.Length; i++)
+        {
+            if (itemSlots[i].childCount == 0)
+            {
+                continue;
+            }
+            Destroy(itemSlots[i].GetChild(0).gameObject);
+        }
+
     }
 
     public void InitGameItems(Player player, Monster monster)
     {
-        itemTemplete.Add(new PeekItem());
-        itemTemplete.Add(new ChangeCardItem());
-        itemTemplete.Add(new TauntItem());
-        itemTemplete.Add(new EncourageItem());
-        itemTemplete.Add(new SwapCardPointsItem());
+        itemPool.Add(new PeekItem());
+        itemPool.Add(new ChangeCardItem());
+        itemPool.Add(new TauntItem());
+        itemPool.Add(new EncourageItem());
+        itemPool.Add(new SwapCardPointsItem());
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 5; i++)
         {
-            player.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+            player.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
         }
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 5; i++)
         {
-            monster.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+            monster.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
         }
     }
 
-    //盖牌阶段
-    //玩家选牌，AI选牌，下一阶段
+    private void EnableButton(Button button, bool isEnabled, System.Action onClickCallback)
+    {
+        button.interactable = isEnabled;
 
-    //道具阶段
-    //先手道具，生效，直到选择结束，后手道具，生效，直到选择结束，下一阶段
+        // 清除旧的监听器
+        button.onClick.RemoveAllListeners();
 
-    //结算阶段
-    //道具可能生效，比点，结算，扣分
+        if (isEnabled)
+        {
+            button.onClick.AddListener(() => onClickCallback?.Invoke());
+            button.image.color = Color.white; // 按钮亮起
+        }
+        else
+        {
+            button.image.color = Color.gray; // 按钮变暗
+        }
+    }
 
-    //回合结束
-    //道具可能生效，是否胜败，否则下一回合
+    private void OnClickedConfirmButton()
+    {
+        switch (currentPhase)
+        {
+            case GamePhase.Cover:
+                CoverPhaseConfirm();
+                break;
+            case GamePhase.Item:
+                ItemPhaseConfirm();
+                break;
+            default:
+                Debug.Log($"{currentPhase}阶段点击 确认 没有作用");
+                break;
+        }
+    }
 
-    //胜败阶段
-    //展示，动画，结束，重开
-
+    private void OnClickedFinishButton()
+    {
+        switch (currentPhase)
+        {
+            case GamePhase.Cover:
+                CoverPhaseRun();
+                break;
+            case GamePhase.Item:
+                ItemPhaseRun();
+                break;
+            default:
+                Debug.Log($"{currentPhase}阶段点击 完成 没有作用");
+                break;
+        }
+    }
 
 }
