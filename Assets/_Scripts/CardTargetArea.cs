@@ -9,11 +9,11 @@ public class CardTargetArea : MonoBehaviour
 
     public FearCard GetAreaCard()
     {
-        return readyToUseCardUI.card;
+        return readyToUseCardUI != null ? readyToUseCardUI.card : null;
     }    
     public GameItem GetAreaItem()
     {
-        return readyToUseItemUI.item;
+        return readyToUseItemUI != null ? readyToUseItemUI.item : null;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

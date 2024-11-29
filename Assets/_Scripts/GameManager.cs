@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     public Player player = new Player();
-    public Monster monster = new Monster();
+    public Player monster = new Player();
 
     public List<FearCard> playDecks = new List<FearCard>();
     public List<FearCard> monsterDecks = new List<FearCard>();
@@ -21,6 +22,14 @@ public class GameManager : MonoBehaviour
     public Button confirmBtn;
     public Button finishBtn;
 
+    public Animator playerAnimator; 
+    public Animator monsterAnimator;
+    public AudioSource audioSource;  // AudioSource for playing sound effects
+    public AudioClip dealCardSound; // Sound effect for dealing cards
+    public AudioClip chooseCardSound; // Sound effect for choosing card
+    public AudioClip chooseItemSound; // Sound effect for choosing item
+    public AudioClip comparePointsSound; // Sound effect for comparing points
+
     private enum GamePhase { Start, Cover, Item, Resolve, End }
     private GamePhase currentPhase;
     private int currentRound;
@@ -31,6 +40,7 @@ public class GameManager : MonoBehaviour
     //初始化
     private void Awake()
     {
+        DOTween.Init();
         InitGame();
     }
 
@@ -44,7 +54,7 @@ public class GameManager : MonoBehaviour
         // 初始化双方手牌
         player.InitCards(playDecks);
         monster.InitCards(monsterDecks);
-        RefreshPlayerCardUI(player);
+        //RefreshPlayerCardUI(player);
 
         // 初始化双方道具
         InitGameItems(player, monster);
@@ -96,7 +106,76 @@ public class GameManager : MonoBehaviour
                 monster.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
             }
         }
+
+        StartCoroutine(PlayDealCardsAnimation());
         //下一阶段
+        //currentPhase = GamePhase.Cover;
+        //RunPhase();
+    }
+
+    private IEnumerator PlayDealCardsAnimation()
+    {
+        // 播放发牌动画
+        //playerAnimator.SetTrigger("DealCards"); // Trigger "DealCards" animation
+        //monsterAnimator.SetTrigger("DealCards");
+
+        //隐藏道具UI，然后显示卡牌UI
+        HidePlayerItemUI();
+
+        List<FearCard> cards = player.GetCards();
+        if (cards.Count == 0)
+        {
+            yield return null;
+        }
+
+        for (int i = 0; i < cards.Count; ++i)
+        {
+            FearCard card = cards[i];
+
+            // 获取当前卡槽中的 FearCardUI（如果没有，实例化一个）
+            FearCardUI cardUI = cardSlots[i].GetComponentInChildren<FearCardUI>();
+            if (cardUI == null)
+            {
+                Debug.Log($"实例化第 {i} 张牌的 UI：{card.cardName}");
+                cardUI = Instantiate(cardPrefab).GetComponent<FearCardUI>();
+                cardUI.transform.SetParent(cardSlots[i], false );
+            }
+
+            // 设置卡牌UI数据
+            cardUI.SetUI(card, cardSlots[i]);
+
+            // 根据卡牌状态显示或隐藏 UI
+            if (card.isUsed)
+            {
+                Debug.Log($"隐藏第 {i} 张已使用卡牌：{card.cardName}");
+                cardUI.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.Log($"显示第 {i} 张未使用卡牌：{card.cardName}");
+                cardUI.gameObject.SetActive(true);
+                cardUI.gameObject.transform.position = cardTargetArea.transform.position;
+                cardUI.transform.DOMove(cardSlots[i].position, 1f).SetEase(Ease.InOutQuad);
+                yield return new WaitForSeconds(1f); // 延迟一下，确保每张卡牌有点时间滑动
+            }
+
+        }
+
+        //// 发牌动画：每张卡牌从 cardTargetArea 滑动到对应的 cardSlots
+        //for (int i = 0; i < cardSlots.Length; i++)
+        //{
+        //    var card = player.GetCards()[i];
+        //    var cardObj = Instantiate(cardPrefab, cardTargetArea.transform.position, Quaternion.identity);
+        //    cardObj.GetComponent<FearCardUI>().SetUI(card, cardSlots[i]);
+            
+        //}
+
+        // 播放发牌音效
+        //audioSource.PlayOneShot(dealCardSound);
+
+        yield return new WaitForSeconds(2f); // 等待动画和音效播放完成
+
+        // 发牌结束后进入选择卡牌阶段
         currentPhase = GamePhase.Cover;
         RunPhase();
     }
@@ -113,6 +192,11 @@ public class GameManager : MonoBehaviour
 
     private void CoverPhaseConfirm()
     {
+        if(cardTargetArea.GetAreaCard() == null)
+        {
+            Debug.Log("未选择卡牌，请选择卡牌后 确认！");
+            return;
+        }
         //玩家选卡
         playerSelectedCard = cardTargetArea.GetAreaCard();
         
@@ -128,7 +212,7 @@ public class GameManager : MonoBehaviour
 
         if (playerSelectedCard == null)
         {
-            Debug.Log("未选择卡牌，请选择卡牌后确认！");
+            Debug.Log("未选择卡牌，请选择卡牌后 结束！");
             return;
         }
 
@@ -176,45 +260,47 @@ public class GameManager : MonoBehaviour
         // 显示道具 UI
         RefreshPlayerItemUI(player);
 
-        //if(isPlayerTurn)
-        //{
-        //    // 启用确认按钮
-        //    EnableConfirmButton(confirmBtn, true, OnClickedConfirmButton);
-        //    EnableConfirmButton(finishBtn, true, OnClickedFinishButton);
-
-        //    while (finishBtn.interactable) continue;
-
-        //    mon.IntoItemPhase();
-        //}
-        //else
-        //{
-        //    mon.IntoItemPhase();
-
-        //    // 启用确认按钮
-        //    EnableConfirmButton(confirmBtn, true, OnClickedConfirmButton);
-        //    EnableConfirmButton(finishBtn, true, OnClickedFinishButton);
-        //}
-
     }
 
     private IEnumerator HandleItemPhase(bool isPlayerTurn)
     {
         Debug.Log($"{(isPlayerTurn ? "玩家" : "敌人")}先手开始道具阶段");
-        while (true)
+
+        // 玩家先使用道具
+        while (isPlayerTurn)
         {
-            if (isPlayerTurn)
+            yield return StartCoroutine(HandlePlayerItemUsage());
+            if (player.GetItems().Count == 0 || !finishBtn.interactable)// 玩家没有道具则结束
             {
-                yield return StartCoroutine(HandlePlayerItemUsage());
-                if (player.GetCards().Count == 0) break; // 玩家没有道具则结束
-            }
-            else
-            {
-                yield return StartCoroutine(HandleEnemyItemUsage());
-                if (monster.GetCards().Count == 0) break; // 敌人没有道具则结束
-            }
+                while(true)
+                {
+                    yield return StartCoroutine(HandleEnemyItemUsage());
+                    if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null) break; // 敌人没有道具则结束
+                }
+            }; 
 
         }
+
+        // 敌人使用道具
+        while (!isPlayerTurn)
+        {
+            yield return StartCoroutine(HandleEnemyItemUsage());
+            if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null)// 敌人没有道具则结束
+            {
+                while (true)
+                {
+                    yield return StartCoroutine(HandlePlayerItemUsage());
+                    if (player.GetItems().Count == 0 || !finishBtn.interactable) break;// 玩家没有道具则结束
+                }
+            }; 
+
+        }
+
+        // 如果玩家和敌人都使用完道具，进入下一阶段
+        currentPhase = GamePhase.Resolve;
+        RunPhase();
     }
+
 
     private IEnumerator HandlePlayerItemUsage()
     {
@@ -230,7 +316,9 @@ public class GameManager : MonoBehaviour
             if (selectedItem != null)
             {
                 Debug.Log($"玩家使用道具：{selectedItem.itemName}");
-                selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+                List<FearCard> cards = selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+                playerSelectedCard = cards[0];
+                monsterSelectedCard = cards[1];
                 player.RemoveItem(selectedItem);
                 itemUsed = true;
             }
@@ -241,26 +329,6 @@ public class GameManager : MonoBehaviour
         EnableButton(confirmBtn, false, null);
     }
 
-    //private IEnumerator HandleEnemyItemUsage()
-    //{
-    //    Debug.Log("敌人的道具回合");
-
-    //    List<GameItem> enemyItems = monster.GetItems();
-    //    if (enemyItems.Count > 0)
-    //    {
-    //        GameItem selectedItem = enemyItems[Random.Range(0, enemyItems.Count)];
-    //        Debug.Log($"敌人使用道具：{selectedItem.itemName}");
-    //        selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
-    //        monster.RemoveItem(selectedItem);
-    //    }
-    //    else
-    //    {
-    //        Debug.Log("敌人没有可用的道具");
-    //    }
-
-    //    // 模拟敌人操作的延迟
-    //    yield return new WaitForSeconds(1f);
-    //}
     private IEnumerator HandleEnemyItemUsage()
     {
         Debug.Log("敌人的道具回合");
@@ -276,17 +344,21 @@ public class GameManager : MonoBehaviour
             if (selectedItem != null)
             {
                 Debug.Log($"敌人使用道具：{selectedItem.itemName}");
-                selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+                List<FearCard> cards = selectedItem.Use(monster, player, monsterSelectedCard, playerSelectedCard);
+                monsterSelectedCard = cards[0];
+                playerSelectedCard = cards[1];
                 monster.RemoveItem(selectedItem);
             }
             else
             {
                 Debug.Log("敌人没有合适的道具");
+                yield return null;
             }
         }
         else
         {
             Debug.Log("敌人没有可用的道具");
+            yield return null;
         }
 
         // 模拟敌人操作的延迟
@@ -408,6 +480,15 @@ public class GameManager : MonoBehaviour
     private void ItemPhaseRun()
     {
         Debug.Log("玩家确认结束道具使用阶段");
+        if(cardTargetArea.GetAreaItem() != null)
+        {
+            GameItem selectedItem = cardTargetArea.GetAreaItem();
+            Debug.Log($"玩家使用道具：{selectedItem.itemName}");
+            List<FearCard> cards = selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
+            playerSelectedCard = cards[0];
+            monsterSelectedCard = cards[1];
+            player.RemoveItem(selectedItem);
+        }
 
         // 禁用确认按钮
         EnableButton(confirmBtn, false, null);
@@ -535,7 +616,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void InitDecks(Player player, Monster monster,int startPoint, int endPoint)
+    public void InitDecks(Player player, Player monster,int startPoint, int endPoint)
     {
         List<int> points = RandomCardPoints(25, 5, startPoint, endPoint);
         for (int i = 0; i < points.Count; i++)
@@ -594,6 +675,7 @@ public class GameManager : MonoBehaviour
                 cardUI.gameObject.transform.localPosition = Vector3.zero;
             }
         }
+
 
     }
 
@@ -682,7 +764,7 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void InitGameItems(Player player, Monster monster)
+    public void InitGameItems(Player player, Player monster)
     {
         itemPool.Add(new PeekItem());
         itemPool.Add(new ChangeCardItem());

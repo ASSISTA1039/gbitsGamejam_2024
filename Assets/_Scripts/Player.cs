@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Player : ICardManager
 {
-    private static List<FearCard> handingCards = new List<FearCard>();
-    private static List<GameItem> items = new List<GameItem>();
-    private static List<FearCard> usedCards = new List<FearCard>();
+    private List<FearCard> handingCards = new List<FearCard>();
+    private List<GameItem> items = new List<GameItem>();
+    private List<FearCard> usedCards = new List<FearCard>();
 
     private int fearValue = 0;
     private bool isBanned = false;

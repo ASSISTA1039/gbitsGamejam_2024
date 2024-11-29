@@ -6,14 +6,16 @@ public abstract class GameItem
 {
     public string itemName; // 道具名称
     public Sprite sprite;
-    public abstract List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard); // 道具使用逻辑
+    public abstract List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard); // 道具使用逻辑
+    //public abstract List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard); // 道具使用逻辑
+    //public abstract List<FearCard> Use(Player player,  FearCard playerCard, FearCard monsterCard); // 道具使用逻辑
 }
 
 public class PeekItem : GameItem
 {
     public PeekItem() { itemName = "窥视"; }
 
-    public override List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard)
+    public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         Debug.Log("使用窥视道具，敌人卡牌信息如下：");
         foreach (var card in monster.GetCards())
@@ -35,7 +37,7 @@ public class ChangeCardItem : GameItem
 {
     public ChangeCardItem() { itemName = "换卡"; }
 
-    public override List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard)
+    public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         List<FearCard> playerDeck = player.GetCards();
         //player.AddCard(playerCard); // 把当前卡牌放回卡组
@@ -57,7 +59,7 @@ public class TauntItem : GameItem
 {
     public TauntItem() { itemName = "讥讽"; }
 
-    public override List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard)
+    public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         Debug.Log($"使用讥讽道具，敌人卡牌：{monsterCard.cardName} 吓人值 -3");
         monsterCard.point = Mathf.Max(1, monsterCard.point - 3);
@@ -76,7 +78,7 @@ public class EncourageItem : GameItem
 {
     public EncourageItem() { itemName = "壮胆"; }
 
-    public override List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard)
+    public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         Debug.Log($"使用壮胆道具，玩家卡牌：{playerCard.cardName} 吓人值 +3");
         playerCard.point = Mathf.Min(9, playerCard.point + 3);
@@ -95,7 +97,7 @@ public class SwapCardPointsItem : GameItem
 {
     public SwapCardPointsItem() { itemName = "交换吓人点数"; }
 
-    public override List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard)
+    public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         int temp = playerCard.point;
         playerCard.point = monsterCard.point;
@@ -116,7 +118,7 @@ public class ForceChangeCardItem : GameItem
 {
     public ForceChangeCardItem() { itemName = "强迫换卡"; }
 
-    public override List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard)
+    public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         List<FearCard> monsterDeck = monster.GetCards();
         monsterDeck.Add(monsterCard); // 把当前卡牌放回卡组
