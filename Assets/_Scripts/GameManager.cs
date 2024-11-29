@@ -34,10 +34,10 @@ public class GameManager : MonoBehaviour
     private GamePhase currentPhase;
     private int currentRound;
 
-    private FearCard playerSelectedCard; // Íæ¼ÒÑ¡ÔñµÄ¿¨ÅÆ
-    private FearCard monsterSelectedCard; // µÐÈËÑ¡ÔñµÄ¿¨ÅÆ
+    private FearCard playerSelectedCard; // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
+    private FearCard monsterSelectedCard; // ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
 
-    //³õÊ¼»¯
+    //ï¿½ï¿½Ê¼ï¿½ï¿½
     private void Awake()
     {
         DOTween.Init();
@@ -48,15 +48,15 @@ public class GameManager : MonoBehaviour
     {
         currentRound = 1;
 
-        // ³õÊ¼»¯¿¨ÅÆ³Ø
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½
         InitDecks(player, monster, 1, 5);
 
-        // ³õÊ¼»¯Ë«·½ÊÖÅÆ
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         player.InitCards(playDecks);
         monster.InitCards(monsterDecks);
         //RefreshPlayerCardUI(player);
 
-        // ³õÊ¼»¯Ë«·½µÀ¾ß
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         InitGameItems(player, monster);
         //RefreshPlayerItemUI(player, null);
 
@@ -86,17 +86,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    #region »ØºÏ¿ªÊ¼
+    #region ï¿½ØºÏ¿ï¿½Ê¼
     private void StartRound()
     {
-        Debug.Log($"»ØºÏ {currentRound} ¿ªÊ¼");
+        Debug.Log($"ï¿½Øºï¿½ {currentRound} ï¿½ï¿½Ê¼");
 
-        //·¢ÅÆ
-        //µÚËÄ»ØºÏ¿ªÊ¼Ë«·½¸÷·¢2¸öµÀ¾ß
+        //ï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½Ä»ØºÏ¿ï¿½Ê¼Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (currentRound == 3)
         {
-            Debug.Log("Ë«·½»ñµÃµÀ¾ß");
-            // Ôö¼ÓµÀ¾ßÂß¼­£¨´ýÀ©Õ¹£©
+            Debug.Log("Ë«ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½");
+            // ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½
             for (int i = 0; i < 2; i++)
             {
                 player.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
@@ -108,18 +108,18 @@ public class GameManager : MonoBehaviour
         }
 
         StartCoroutine(PlayDealCardsAnimation());
-        //ÏÂÒ»½×¶Î
+        //ï¿½ï¿½Ò»ï¿½×¶ï¿½
         //currentPhase = GamePhase.Cover;
         //RunPhase();
     }
 
     private IEnumerator PlayDealCardsAnimation()
     {
-        // ²¥·Å·¢ÅÆ¶¯»­
+        // ï¿½ï¿½ï¿½Å·ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½
         //playerAnimator.SetTrigger("DealCards"); // Trigger "DealCards" animation
         //monsterAnimator.SetTrigger("DealCards");
 
-        //Òþ²ØµÀ¾ßUI£¬È»ºóÏÔÊ¾¿¨ÅÆUI
+        //ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½UIï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½UI
         HidePlayerItemUI();
 
         List<FearCard> cards = player.GetCards();
@@ -132,36 +132,36 @@ public class GameManager : MonoBehaviour
         {
             FearCard card = cards[i];
 
-            // »ñÈ¡µ±Ç°¿¨²ÛÖÐµÄ FearCardUI£¨Èç¹ûÃ»ÓÐ£¬ÊµÀý»¯Ò»¸ö£©
+            // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ FearCardUIï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð£ï¿½Êµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
             FearCardUI cardUI = cardSlots[i].GetComponentInChildren<FearCardUI>();
             if (cardUI == null)
             {
-                Debug.Log($"ÊµÀý»¯µÚ {i} ÕÅÅÆµÄ UI£º{card.cardName}");
+                Debug.Log($"Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {i} ï¿½ï¿½ï¿½Æµï¿½ UIï¿½ï¿½{card.cardName}");
                 cardUI = Instantiate(cardPrefab).GetComponent<FearCardUI>();
                 cardUI.transform.SetParent(cardSlots[i], false );
             }
 
-            // ÉèÖÃ¿¨ÅÆUIÊý¾Ý
+            // ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
             cardUI.SetUI(card, cardSlots[i]);
 
-            // ¸ù¾Ý¿¨ÅÆ×´Ì¬ÏÔÊ¾»òÒþ²Ø UI
+            // ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI
             if (card.isUsed)
             {
-                Debug.Log($"Òþ²ØµÚ {i} ÕÅÒÑÊ¹ÓÃ¿¨ÅÆ£º{card.cardName}");
+                Debug.Log($"ï¿½ï¿½ï¿½Øµï¿½ {i} ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½{card.cardName}");
                 cardUI.gameObject.SetActive(false);
             }
             else
             {
-                Debug.Log($"ÏÔÊ¾µÚ {i} ÕÅÎ´Ê¹ÓÃ¿¨ÅÆ£º{card.cardName}");
+                Debug.Log($"ï¿½ï¿½Ê¾ï¿½ï¿½ {i} ï¿½ï¿½Î´Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½{card.cardName}");
                 cardUI.gameObject.SetActive(true);
                 cardUI.gameObject.transform.position = cardTargetArea.transform.position;
                 cardUI.transform.DOMove(cardSlots[i].position, 1f).SetEase(Ease.InOutQuad);
-                yield return new WaitForSeconds(1f); // ÑÓ³ÙÒ»ÏÂ£¬È·±£Ã¿ÕÅ¿¨ÅÆÓÐµãÊ±¼ä»¬¶¯
+                yield return new WaitForSeconds(1f); // ï¿½Ó³ï¿½Ò»ï¿½Â£ï¿½È·ï¿½ï¿½Ã¿ï¿½Å¿ï¿½ï¿½ï¿½ï¿½Ðµï¿½Ê±ï¿½ä»¬ï¿½ï¿½
             }
 
         }
 
-        //// ·¢ÅÆ¶¯»­£ºÃ¿ÕÅ¿¨ÅÆ´Ó cardTargetArea »¬¶¯µ½¶ÔÓ¦µÄ cardSlots
+        //// ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½Å¿ï¿½ï¿½Æ´ï¿½ cardTargetArea ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ cardSlots
         //for (int i = 0; i < cardSlots.Length; i++)
         //{
         //    var card = player.GetCards()[i];
@@ -170,21 +170,21 @@ public class GameManager : MonoBehaviour
             
         //}
 
-        // ²¥·Å·¢ÅÆÒôÐ§
+        // ï¿½ï¿½ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
         //audioSource.PlayOneShot(dealCardSound);
 
-        yield return new WaitForSeconds(2f); // µÈ´ý¶¯»­ºÍÒôÐ§²¥·ÅÍê³É
+        yield return new WaitForSeconds(2f); // ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-        // ·¢ÅÆ½áÊøºó½øÈëÑ¡Ôñ¿¨ÅÆ½×¶Î
+        // ï¿½ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Æ½×¶ï¿½
         currentPhase = GamePhase.Cover;
         RunPhase();
     }
     #endregion
 
-    #region ¸ÇÅÆ½×¶Î
+    #region ï¿½ï¿½ï¿½Æ½×¶ï¿½
     private void CoverPhase()
     {
-        Debug.Log("¸ÇÅÆ½×¶Î¿ªÊ¼");
+        Debug.Log("ï¿½ï¿½ï¿½Æ½×¶Î¿ï¿½Ê¼");
 
         EnableButton(confirmBtn, true, OnClickedConfirmButton);
         EnableButton(finishBtn, true, OnClickedFinishButton);
@@ -194,10 +194,10 @@ public class GameManager : MonoBehaviour
     {
         if(cardTargetArea.GetAreaCard() == null)
         {
-            Debug.Log("Î´Ñ¡Ôñ¿¨ÅÆ£¬ÇëÑ¡Ôñ¿¨ÅÆºó È·ÈÏ£¡");
+            Debug.Log("Î´Ñ¡ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Æºï¿½ È·ï¿½Ï£ï¿½");
             return;
         }
-        //Íæ¼ÒÑ¡¿¨
+        //ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
         playerSelectedCard = cardTargetArea.GetAreaCard();
         
         EnableButton(confirmBtn, false, null);
@@ -212,22 +212,22 @@ public class GameManager : MonoBehaviour
 
         if (playerSelectedCard == null)
         {
-            Debug.Log("Î´Ñ¡Ôñ¿¨ÅÆ£¬ÇëÑ¡Ôñ¿¨ÅÆºó ½áÊø£¡");
+            Debug.Log("Î´Ñ¡ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Æºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
             return;
         }
 
-        Debug.Log($"Íæ¼ÒÑ¡ÔñÁË¿¨ÅÆ£º{playerSelectedCard.cardName}");
+        Debug.Log($"ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½Æ£ï¿½{playerSelectedCard.cardName}");
 
-        //µÐÈËÑ¡¿¨
+        //ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
         List<FearCard> monsterCards = monster.GetCards();
         monsterSelectedCard = monsterCards[Random.Range(0, monsterCards.Count)];
-        Debug.Log($"µÐÈËÑ¡ÔñÁË¿¨ÅÆ£º{monsterSelectedCard.cardName}");
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½Æ£ï¿½{monsterSelectedCard.cardName}");
 
 
         EnableButton(confirmBtn, false, null);
         EnableButton(finishBtn, false, null);
 
-        // ½øÈëÏÂÒ»½×¶Î
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
         currentPhase = GamePhase.Item;
 
         RunPhase();
@@ -245,58 +245,58 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    #region µÀ¾ß½×¶Î
+    #region ï¿½ï¿½ï¿½ß½×¶ï¿½
     private void ItemPhase()
     {
-        Debug.Log("µÀ¾ß½×¶Î¿ªÊ¼");
+        Debug.Log("ï¿½ï¿½ï¿½ß½×¶Î¿ï¿½Ê¼");
 
-        // È·¶¨ÏÈÊÖ¹æÔò£º¼ÙÉèÅ¼Êý»ØºÏµÐÈËÏÈÊÖ£¬ÆæÊý»ØºÏÍæ¼ÒÏÈÊÖ
+        // È·ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ò£º¼ï¿½ï¿½ï¿½Å¼ï¿½ï¿½ï¿½ØºÏµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         bool isPlayerTurn = currentRound % 2 != 0;
 
         EnableButton(finishBtn, true, OnClickedFinishButton);
-        // ¿ªÊ¼µÀ¾ßÊ¹ÓÃ½×¶Î
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã½×¶ï¿½
         StartCoroutine(HandleItemPhase(isPlayerTurn));
 
-        // ÏÔÊ¾µÀ¾ß UI
+        // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ UI
         RefreshPlayerItemUI(player);
 
     }
 
     private IEnumerator HandleItemPhase(bool isPlayerTurn)
     {
-        Debug.Log($"{(isPlayerTurn ? "Íæ¼Ò" : "µÐÈË")}ÏÈÊÖ¿ªÊ¼µÀ¾ß½×¶Î");
+        Debug.Log($"{(isPlayerTurn ? "ï¿½ï¿½ï¿½" : "ï¿½ï¿½ï¿½ï¿½")}ï¿½ï¿½ï¿½Ö¿ï¿½Ê¼ï¿½ï¿½ï¿½ß½×¶ï¿½");
 
-        // Íæ¼ÒÏÈÊ¹ÓÃµÀ¾ß
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½
         while (isPlayerTurn)
         {
             yield return StartCoroutine(HandlePlayerItemUsage());
-            if (player.GetItems().Count == 0 || !finishBtn.interactable)// Íæ¼ÒÃ»ÓÐµÀ¾ßÔò½áÊø
+            if (player.GetItems().Count == 0 || !finishBtn.interactable)// ï¿½ï¿½ï¿½Ã»ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 while(true)
                 {
                     yield return StartCoroutine(HandleEnemyItemUsage());
-                    if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null) break; // µÐÈËÃ»ÓÐµÀ¾ßÔò½áÊø
+                    if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null) break; // ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
             }; 
 
         }
 
-        // µÐÈËÊ¹ÓÃµÀ¾ß
+        // ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ï¿½
         while (!isPlayerTurn)
         {
             yield return StartCoroutine(HandleEnemyItemUsage());
-            if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null)// µÐÈËÃ»ÓÐµÀ¾ßÔò½áÊø
+            if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null)// ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             {
                 while (true)
                 {
                     yield return StartCoroutine(HandlePlayerItemUsage());
-                    if (player.GetItems().Count == 0 || !finishBtn.interactable) break;// Íæ¼ÒÃ»ÓÐµÀ¾ßÔò½áÊø
+                    if (player.GetItems().Count == 0 || !finishBtn.interactable) break;// ï¿½ï¿½ï¿½Ã»ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 }
             }; 
 
         }
 
-        // Èç¹ûÍæ¼ÒºÍµÐÈË¶¼Ê¹ÓÃÍêµÀ¾ß£¬½øÈëÏÂÒ»½×¶Î
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ÒºÍµï¿½ï¿½Ë¶ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
         currentPhase = GamePhase.Resolve;
         RunPhase();
     }
@@ -304,18 +304,18 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandlePlayerItemUsage()
     {
-        Debug.Log("Íæ¼ÒµÄµÀ¾ß»ØºÏ");
+        Debug.Log("ï¿½ï¿½ÒµÄµï¿½ï¿½ß»Øºï¿½");
 
-        // µÈ´ýÍæ¼ÒÑ¡ÔñµÀ¾ß
+        // ï¿½È´ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½
         bool itemUsed = false;
         GameItem selectedItem = null;
-        // ÆôÓÃÈ·ÈÏ°´Å¥
+        // ï¿½ï¿½ï¿½ï¿½È·ï¿½Ï°ï¿½Å¥
         EnableButton(confirmBtn, true, () =>
         {
-            selectedItem = cardTargetArea.GetAreaItem(); // »ñÈ¡Íæ¼ÒÑ¡ÔñµÄµÀ¾ß
+            selectedItem = cardTargetArea.GetAreaItem(); // ï¿½ï¿½È¡ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Äµï¿½ï¿½ï¿½
             if (selectedItem != null)
             {
-                Debug.Log($"Íæ¼ÒÊ¹ÓÃµÀ¾ß£º{selectedItem.itemName}");
+                Debug.Log($"ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ß£ï¿½{selectedItem.itemName}");
                 List<FearCard> cards = selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
                 playerSelectedCard = cards[0];
                 monsterSelectedCard = cards[1];
@@ -324,26 +324,26 @@ public class GameManager : MonoBehaviour
             }
         });
 
-        // µÈ´ýÍæ¼ÒÈ·ÈÏ
+        // ï¿½È´ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½
         yield return new WaitUntil(() => itemUsed);
         EnableButton(confirmBtn, false, null);
     }
 
     private IEnumerator HandleEnemyItemUsage()
     {
-        Debug.Log("µÐÈËµÄµÀ¾ß»ØºÏ");
+        Debug.Log("ï¿½ï¿½ï¿½ËµÄµï¿½ï¿½ß»Øºï¿½");
 
         List<GameItem> enemyItems = monster.GetItems();
         if (enemyItems.Count > 0)
         {
             GameItem selectedItem = null;
 
-            // AIÑ¡ÔñµÀ¾ßµÄÂß¼­
+            // AIÑ¡ï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½ß¼ï¿½
             selectedItem = ChooseEnemyItem(enemyItems);
 
             if (selectedItem != null)
             {
-                Debug.Log($"µÐÈËÊ¹ÓÃµÀ¾ß£º{selectedItem.itemName}");
+                Debug.Log($"ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ß£ï¿½{selectedItem.itemName}");
                 List<FearCard> cards = selectedItem.Use(monster, player, monsterSelectedCard, playerSelectedCard);
                 monsterSelectedCard = cards[0];
                 playerSelectedCard = cards[1];
@@ -351,33 +351,33 @@ public class GameManager : MonoBehaviour
             }
             else
             {
-                Debug.Log("µÐÈËÃ»ÓÐºÏÊÊµÄµÀ¾ß");
+                Debug.Log("ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðºï¿½ï¿½ÊµÄµï¿½ï¿½ï¿½");
                 yield return null;
             }
         }
         else
         {
-            Debug.Log("µÐÈËÃ»ÓÐ¿ÉÓÃµÄµÀ¾ß");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¿ï¿½ï¿½ÃµÄµï¿½ï¿½ï¿½");
             yield return null;
         }
 
-        // Ä£ÄâµÐÈË²Ù×÷µÄÑÓ³Ù
+        // Ä£ï¿½ï¿½ï¿½ï¿½Ë²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½
         yield return new WaitForSeconds(1f);
     }
 
     private GameItem ChooseEnemyItem(List<GameItem> enemyItems)
     {
-        // ¼ÙÉèµÐÈËµÄµÀ¾ß²ßÂÔ1£º¿úÊÓºó×÷³ö¾ö²ß
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ËµÄµï¿½ï¿½ß²ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½Óºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         GameItem itemToUse = null;
 
-        GameItem peekItem = enemyItems.Find(item => item.itemName == "¿úÊÓ"); // ÕÒµ½¿úÊÓµÀ¾ß
+        GameItem peekItem = enemyItems.Find(item => item.itemName == "ï¿½ï¿½ï¿½ï¿½"); // ï¿½Òµï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½
         if (peekItem != null)
         {
-            // Ê¹ÓÃ¿úÊÓµÀ¾ß
+            // Ê¹ï¿½Ã¿ï¿½ï¿½Óµï¿½ï¿½ï¿½
             itemToUse = peekItem;
-            Debug.Log("µÐÈËÊ¹ÓÃ¿úÊÓµÀ¾ß");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¿ï¿½ï¿½Óµï¿½ï¿½ï¿½");
 
-            // ÒÀ¾ÝµÐÈËµÄ²ßÂÔ¾ö¶¨Ê¹ÓÃºÎÖÖµÀ¾ß
+            // ï¿½ï¿½ï¿½Ýµï¿½ï¿½ËµÄ²ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½Ê¹ï¿½Ãºï¿½ï¿½Öµï¿½ï¿½ï¿½
             GameItem bestCounterItem = EvaluatePeekStrategy(peekItem);
             if (bestCounterItem != null)
             {
@@ -386,7 +386,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Èç¹ûÃ»ÓÐ¿úÊÓµÀ¾ß£¬°´ÕÕÆäËû²ßÂÔÑ¡ÔñµÀ¾ß
+            // ï¿½ï¿½ï¿½Ã»ï¿½Ð¿ï¿½ï¿½Óµï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½
             itemToUse = SelectOtherEnemyItems(enemyItems);
         }
 
@@ -395,21 +395,21 @@ public class GameManager : MonoBehaviour
 
     private GameItem EvaluatePeekStrategy(GameItem peekItem)
     {
-        // »ùÓÚ¿úÊÓ½á¹û£¬µÐÈËÑ¡Ôñ×îºÏÊÊµÄµÀ¾ß
+        // ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÊµÄµï¿½ï¿½ï¿½
         if (peekItem != null)
         {
-            // ¸ù¾Ý¶Ô·½¿¨ÅÆµãÊýÀ´Ñ¡ÔñºÏÊÊµÄµÀ¾ß²ßÂÔ
-            int playerCardValue = playerSelectedCard.point; // ¼ÙÉèÓÐ»ñÈ¡Íæ¼Òµ±Ç°¿¨ÅÆµãÊýµÄº¯Êý
-            int monsterCardValue = monsterSelectedCard.point; // ¼ÙÉèÓÐ»ñÈ¡µÐÈËµ±Ç°¿¨ÅÆµãÊýµÄº¯Êý
+            // ï¿½ï¿½ï¿½Ý¶Ô·ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ÊµÄµï¿½ï¿½ß²ï¿½ï¿½ï¿½
+            int playerCardValue = playerSelectedCard.point; // ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½È¡ï¿½ï¿½Òµï¿½Ç°ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½
+            int monsterCardValue = monsterSelectedCard.point; // ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½È¡ï¿½ï¿½ï¿½Ëµï¿½Ç°ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½Äºï¿½ï¿½ï¿½
 
             if (playerCardValue > monsterCardValue)
             {
-                // ¸ù¾Ý²î¾àÑ¡ÔñÊÇ·ñ´ò³ö×³µ¨¡¢Íµ»»»òÇ¿ÆÈ
+                // ï¿½ï¿½ï¿½Ý²ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½×³ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½
                 return ChooseBoostOrSwap(playerCardValue, monsterCardValue);
             }
             else
             {
-                // ¸ù¾Ý²î¾àÑ¡Ôñ»ÚÆåµÀ¾ß»òÌø¹ý
+                // ï¿½ï¿½ï¿½Ý²ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß»ï¿½ï¿½ï¿½ï¿½ï¿½
                 return ChooseRewindOrSkip();
             }
         }
@@ -419,28 +419,28 @@ public class GameManager : MonoBehaviour
 
     private GameItem ChooseBoostOrSwap(int playerCardValue, int monsterCardValue)
     {
-        // Ñ¡Ôñ×³µ¨»òÍµ»»²ßÂÔ
+        // Ñ¡ï¿½ï¿½×³ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (Mathf.Abs(playerCardValue - monsterCardValue) <= 3)
         {
-            return monster.GetItems().Find(item => item.itemName == "×³µ¨"); // ÕÒµ½×³µ¨µÀ¾ß
+            return monster.GetItems().Find(item => item.itemName == "×³ï¿½ï¿½"); // ï¿½Òµï¿½×³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
         else
         {
-            return monster.GetItems().Find(item => item.itemName == "Íµ»»"); // ÕÒµ½Íµ»»µÀ¾ß
+            return monster.GetItems().Find(item => item.itemName == "Íµï¿½ï¿½"); // ï¿½Òµï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         }
     }
 
     private GameItem ChooseRewindOrSkip()
     {
-        // Èç¹ûÃ»ÓÐºÏÊÊµÄµÀ¾ß£¬ÔòÑ¡Ôñ»ÚÆå»òÌø¹ý
-        Debug.Log("µÐÈËÃ»ÓÐºÏÊÊµÄµÀ¾ß, Ñ¡ÔñµÀ¾ß(»ÚÆå)");
-        return monster.GetItems().Find(item => item.itemName == "»ÚÆå"); // ÕÒµ½»ÚÆåµÀ¾ß
+        // ï¿½ï¿½ï¿½Ã»ï¿½Ðºï¿½ï¿½ÊµÄµï¿½ï¿½ß£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðºï¿½ï¿½ÊµÄµï¿½ï¿½ï¿½, Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½)");
+        return monster.GetItems().Find(item => item.itemName == "ï¿½ï¿½ï¿½ï¿½"); // ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
     private GameItem SelectOtherEnemyItems(List<GameItem> enemyItems)
     {
-        // Ñ¡ÔñÆäËû·Ç¿úÊÓµÀ¾ßµÄ²ßÂÔ£¬ÀýÈçËæ»úÑ¡Ôñ
-        Debug.Log("µÐÈËËæ»úÑ¡ÔñµÀ¾ß");
+        // Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½Óµï¿½ï¿½ßµÄ²ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½");
         return enemyItems[Random.Range(0, enemyItems.Count)];
     }
 
@@ -479,51 +479,51 @@ public class GameManager : MonoBehaviour
 
     private void ItemPhaseRun()
     {
-        Debug.Log("Íæ¼ÒÈ·ÈÏ½áÊøµÀ¾ßÊ¹ÓÃ½×¶Î");
+        Debug.Log("ï¿½ï¿½ï¿½È·ï¿½Ï½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã½×¶ï¿½");
         if(cardTargetArea.GetAreaItem() != null)
         {
             GameItem selectedItem = cardTargetArea.GetAreaItem();
-            Debug.Log($"Íæ¼ÒÊ¹ÓÃµÀ¾ß£º{selectedItem.itemName}");
+            Debug.Log($"ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ß£ï¿½{selectedItem.itemName}");
             List<FearCard> cards = selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
             playerSelectedCard = cards[0];
             monsterSelectedCard = cards[1];
             player.RemoveItem(selectedItem);
         }
 
-        // ½ûÓÃÈ·ÈÏ°´Å¥
+        // ï¿½ï¿½ï¿½ï¿½È·ï¿½Ï°ï¿½Å¥
         EnableButton(confirmBtn, false, null);
         EnableButton(finishBtn, false, null);
 
-        // ÇåÀíµÀ¾ß UI
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI
         RefreshPlayerItemUI(player, null);
 
-        // ½øÈëÏÂÒ»½×¶Î
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
         currentPhase = GamePhase.Resolve;
         RunPhase();
     }
 
     private void HandleItemClicked(GameItem item)
     {
-        Debug.Log($"Íæ¼Òµã»÷Ê¹ÓÃµÀ¾ß£º{item.itemName}");
+        Debug.Log($"ï¿½ï¿½Òµï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½ß£ï¿½{item.itemName}");
 
-        // Ö´ÐÐµÀ¾ßÐ§¹û
+        // Ö´ï¿½Ðµï¿½ï¿½ï¿½Ð§ï¿½ï¿½
         List<FearCard> cards = item.Use(player, monster, playerSelectedCard, monsterSelectedCard);
         playerSelectedCard = cards[0];
         monsterSelectedCard = cards[1];
 
-        // ÒÆ³ýÍæ¼ÒµÀ¾ß
+        // ï¿½Æ³ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½
         player.RemoveItem(item);
 
-        // ¸üÐÂ UI
+        // ï¿½ï¿½ï¿½ï¿½ UI
         RefreshPlayerItemUI(player);
     }
     #endregion
 
-    #region ½áËã½×¶Î
+    #region ï¿½ï¿½ï¿½ï¿½×¶ï¿½
     private void ResolvePhase()
     {
-        Debug.Log("½áËã½×¶Î¿ªÊ¼");
-        Debug.Log($"Íæ¼ÒÑ¡ÔñµÄ¿¨Îª({playerSelectedCard.cardName})£¬µãÊýÎª({playerSelectedCard.point})");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½×¶Î¿ï¿½Ê¼");
+        Debug.Log($"ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ä¿ï¿½Îª({playerSelectedCard.cardName})ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îª({playerSelectedCard.point})");
 
         int playerPoint = playerSelectedCard.point;
         int monsterPoint = monsterSelectedCard.point;
@@ -531,18 +531,18 @@ public class GameManager : MonoBehaviour
         if (playerPoint > monsterPoint)
         {
             monster.IncreaseFearValue(1);
-            Debug.Log($"Íæ¼Ò»ñÊ¤£¬µÐÈËÔö¼ÓÒ»µã¿Ö¾åÖµ ({monster.GetFearValue()})");
+            Debug.Log($"ï¿½ï¿½Ò»ï¿½Ê¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ö¾ï¿½Öµ ({monster.GetFearValue()})");
         }
         else if (playerPoint < monsterPoint)
         {
             player.IncreaseFearValue(1);
-            Debug.Log($"µÐÈË»ñÊ¤£¬Íæ¼ÒÔö¼ÓÒ»µã¿Ö¾åÖµ ({player.GetFearValue()})");
+            Debug.Log($"ï¿½ï¿½ï¿½Ë»ï¿½Ê¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ö¾ï¿½Öµ ({player.GetFearValue()})");
         }
         else
         {
             monster.IncreaseFearValue(1);
             player.IncreaseFearValue(1);
-            Debug.Log($"Æ½¾Ö£¬Ë«·½¶¼Ôö¼Ó1¿Ö¾åÖµ({player.GetFearValue()}):({monster.GetFearValue()})");
+            Debug.Log($"Æ½ï¿½Ö£ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½Ö¾ï¿½Öµ({player.GetFearValue()}):({monster.GetFearValue()})");
         }
 
         player.UseCard(playerSelectedCard);
@@ -552,33 +552,33 @@ public class GameManager : MonoBehaviour
 
         RefreshPlayerCardUI(player);
 
-        // ½øÈëÏÂÒ»½×¶Î
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
         currentPhase = GamePhase.End;
         RunPhase();
 
-        //»ñÈ¡Ë«·½µãÊý
-        //±Èµã£¬Ð¡µÄÒ»·½Ôö¼Ó¿Ö¾åÖµ
-        //ÏÂÒ»½×¶Î
+        //ï¿½ï¿½È¡Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //ï¿½Èµã£¬Ð¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿Ö¾ï¿½Öµ
+        //ï¿½ï¿½Ò»ï¿½×¶ï¿½
     }
 
     private void EndPhase()
     {
-        Debug.Log("»ØºÏ½áÊø½×¶Î");
+        Debug.Log("ï¿½ØºÏ½ï¿½ï¿½ï¿½ï¿½×¶ï¿½");
 
-        // ÅÐ¶ÏÊÇ·ñÓÐÒ»·½¿Ö¾åÖµ´ïµ½3
+        // ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö¾ï¿½Öµï¿½ïµ½3
         if (player.GetFearValue() >= 3)
         {
-            Debug.Log("Íæ¼ÒÊ§°Ü£¡");
-            // Ê§°ÜÂß¼­
+            Debug.Log("ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½");
+            // Ê§ï¿½ï¿½ï¿½ß¼ï¿½
         }
         else if (monster.GetFearValue() >= 3)
         {
-            Debug.Log("µÐÈËÊ§°Ü£¡");
-            // Ê¤ÀûÂß¼­
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½");
+            // Ê¤ï¿½ï¿½ï¿½ß¼ï¿½
         }
         else
         {
-            // ½øÈëÏÂÒ»»ØºÏ
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Øºï¿½
             currentRound++;
             currentPhase = GamePhase.Start;
             RunPhase();
@@ -592,11 +592,11 @@ public class GameManager : MonoBehaviour
 
         while (points.Count < cardCount)
         {
-            // Ê¹ÓÃÒ»¸ö¼òµ¥µÄ¼ÓÈ¨Âß¼­Éú³ÉÖÐ¼ä¸ÅÂÊ¸ü¸ßµÄËæ»úÊý
-            float randomValue = Random.Range(0f, 1f); // Éú³ÉÒ»¸ö[0, 1]µÄ¸¡µãÊý
+            // Ê¹ï¿½ï¿½Ò»ï¿½ï¿½ï¿½òµ¥µÄ¼ï¿½È¨ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½Ê¸ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            float randomValue = Random.Range(0f, 1f); // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½[0, 1]ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½
 
-            // (ÆðÊ¼Öµa£¬ÖÕÖ¹Öµb£¬²åÖµ±ÈÀýt) ÀýÈça = 0, b = 1, t = 0, Ôò·µ»ØÖµÎª0
-            int point = Mathf.RoundToInt(Mathf.Lerp(minPoint, maxPoint, randomValue * randomValue)); // Æ½·½È¨ÖØÊ¹ÖÐ¼ä¸ü¸ß
+            // (ï¿½ï¿½Ê¼Öµaï¿½ï¿½ï¿½ï¿½Ö¹Öµbï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½t) ï¿½ï¿½ï¿½ï¿½a = 0, b = 1, t = 0, ï¿½ò·µ»ï¿½ÖµÎª0
+            int point = Mathf.RoundToInt(Mathf.Lerp(minPoint, maxPoint, randomValue * randomValue)); // Æ½ï¿½ï¿½È¨ï¿½ï¿½Ê¹ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½
 
             if (point > 0 && point <= maxPoint && totalPoints - point >= minPoint * (cardCount - points.Count - 1))
             {
@@ -605,7 +605,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        // ´òÂÒË³Ðò£¬Ê¹Ã¿´Î·ÖÅäµÄË³ÐòËæ»ú
+        // ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ê¹Ã¿ï¿½Î·ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½
         for (int i = 0; i < points.Count; i++)
         {
             int swapIndex = Random.Range(0, points.Count);
@@ -621,7 +621,7 @@ public class GameManager : MonoBehaviour
         List<int> points = RandomCardPoints(25, 5, startPoint, endPoint);
         for (int i = 0; i < points.Count; i++)
         {
-            string cardName = $"Íæ¼Ò¿¨{i}";
+            string cardName = $"ï¿½ï¿½Ò¿ï¿½{i}";
             playDecks.Add(new FearCard(cardName, points[i]));
         }
         player.ResetFearValue();
@@ -629,16 +629,16 @@ public class GameManager : MonoBehaviour
         points = RandomCardPoints(25, 5, startPoint, endPoint);
         for (int i = 0; i < points.Count; i++)
         {
-            string cardName = $"µÐÈË¿¨{i}";
+            string cardName = $"ï¿½ï¿½ï¿½Ë¿ï¿½{i}";
             monsterDecks.Add(new FearCard(cardName, points[i]));
-            Debug.Log($"µÐÈË¿¨{i}µÄµãÊý£º{points[i]}");
+            Debug.Log($"ï¿½ï¿½ï¿½Ë¿ï¿½{i}ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½{points[i]}");
         }
         monster.ResetFearValue();
     }
 
     public void RefreshPlayerCardUI(Player player)
     {
-        //Òþ²ØµÀ¾ßUI£¬È»ºóÏÔÊ¾¿¨ÅÆUI
+        //ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½UIï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½UI
         HidePlayerItemUI();
 
         List<FearCard> cards = player.GetCards();
@@ -651,26 +651,26 @@ public class GameManager : MonoBehaviour
         {
             FearCard card = cards[i];
 
-            // »ñÈ¡µ±Ç°¿¨²ÛÖÐµÄ FearCardUI£¨Èç¹ûÃ»ÓÐ£¬ÊµÀý»¯Ò»¸ö£©
+            // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ FearCardUIï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð£ï¿½Êµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
             FearCardUI cardUI = cardSlots[i].GetComponentInChildren<FearCardUI>();
             if (cardUI == null)
             {
-                Debug.Log($"ÊµÀý»¯µÚ {i} ÕÅÅÆµÄ UI£º{card.cardName}");
+                Debug.Log($"Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {i} ï¿½ï¿½ï¿½Æµï¿½ UIï¿½ï¿½{card.cardName}");
                 cardUI = Instantiate(cardPrefab, cardSlots[i]).GetComponent<FearCardUI>();
             }
 
-            // ÉèÖÃ¿¨ÅÆUIÊý¾Ý
+            // ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
             cardUI.SetUI(card, cardSlots[i]);
 
-            // ¸ù¾Ý¿¨ÅÆ×´Ì¬ÏÔÊ¾»òÒþ²Ø UI
+            // ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI
             if (card.isUsed)
             {
-                Debug.Log($"Òþ²ØµÚ {i} ÕÅÒÑÊ¹ÓÃ¿¨ÅÆ£º{card.cardName}");
+                Debug.Log($"ï¿½ï¿½ï¿½Øµï¿½ {i} ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½{card.cardName}");
                 cardUI.gameObject.SetActive(false);
             }
             else
             {
-                Debug.Log($"ÏÔÊ¾µÚ {i} ÕÅÎ´Ê¹ÓÃ¿¨ÅÆ£º{card.cardName}");
+                Debug.Log($"ï¿½ï¿½Ê¾ï¿½ï¿½ {i} ï¿½ï¿½Î´Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½{card.cardName}");
                 cardUI.gameObject.SetActive(true);
                 cardUI.gameObject.transform.localPosition = Vector3.zero;
             }
@@ -694,7 +694,7 @@ public class GameManager : MonoBehaviour
 
     public void RefreshPlayerItemUI(Player player)
     {
-        //Òþ²Ø¿¨ÅÆUI£¬È»ºóÏÔÊ¾µÀ¾ßUI
+        //ï¿½ï¿½ï¿½Ø¿ï¿½ï¿½ï¿½UIï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½UI
         HidePlayerCardUI();
 
         List<GameItem> items = player.GetItems();
@@ -707,15 +707,15 @@ public class GameManager : MonoBehaviour
         {
             GameItem item = items[i];
 
-            // »ñÈ¡µ±Ç°¿¨²ÛÖÐµÄ GameIteUI£¨Èç¹ûÃ»ÓÐ£¬ÊµÀý»¯Ò»¸ö£©
+            // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ GameIteUIï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð£ï¿½Êµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
             GameItemUI itemUI = itemSlots[i].GetComponentInChildren<GameItemUI>();
             if (itemUI == null)
             {
-                Debug.Log($"ÊµÀý»¯µÚ {i} ÕÅÅÆµÄ UI£º{item.itemName}");
+                Debug.Log($"Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {i} ï¿½ï¿½ï¿½Æµï¿½ UIï¿½ï¿½{item.itemName}");
                 itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
             }
 
-            // ÉèÖÃµÀ¾ßUIÊý¾Ý
+            // ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
             itemUI.gameObject.transform.localPosition = Vector3.zero;
             itemUI.SetUI(item, itemSlots[i], HandleItemClicked);
 
@@ -736,15 +736,15 @@ public class GameManager : MonoBehaviour
         {
             GameItem item = items[i];
 
-            // »ñÈ¡µ±Ç°¿¨²ÛÖÐµÄ GameIteUI£¨Èç¹ûÃ»ÓÐ£¬ÊµÀý»¯Ò»¸ö£©
+            // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ GameIteUIï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð£ï¿½Êµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
             GameItemUI itemUI = itemSlots[i].GetComponentInChildren<GameItemUI>();
             if (itemUI == null)
             {
-                Debug.Log($"ÊµÀý»¯µÚ {i} ÕÅÅÆµÄ UI£º{item.itemName}");
+                Debug.Log($"Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {i} ï¿½ï¿½ï¿½Æµï¿½ UIï¿½ï¿½{item.itemName}");
                 itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
             }
 
-            // ÉèÖÃµÀ¾ßUIÊý¾Ý
+            // ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
             itemUI.gameObject.transform.localPosition = Vector3.zero;
             itemUI.SetUI(item, itemSlots[i], callback);
 
@@ -786,17 +786,17 @@ public class GameManager : MonoBehaviour
     {
         button.interactable = isEnabled;
 
-        // Çå³ý¾ÉµÄ¼àÌýÆ÷
+        // ï¿½ï¿½ï¿½ï¿½ÉµÄ¼ï¿½ï¿½ï¿½ï¿½ï¿½
         button.onClick.RemoveAllListeners();
 
         if (isEnabled)
         {
             button.onClick.AddListener(() => onClickCallback?.Invoke());
-            button.image.color = Color.white; // °´Å¥ÁÁÆð
+            button.image.color = Color.white; // ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½
         }
         else
         {
-            button.image.color = Color.gray; // °´Å¥±ä°µ
+            button.image.color = Color.gray; // ï¿½ï¿½Å¥ï¿½ä°µ
         }
     }
 
@@ -811,7 +811,7 @@ public class GameManager : MonoBehaviour
                 ItemPhaseConfirm();
                 break;
             default:
-                Debug.Log($"{currentPhase}½×¶Îµã»÷ È·ÈÏ Ã»ÓÐ×÷ÓÃ");
+                Debug.Log($"{currentPhase}ï¿½×¶Îµï¿½ï¿½ È·ï¿½ï¿½ Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
                 break;
         }
     }
@@ -827,9 +827,412 @@ public class GameManager : MonoBehaviour
                 ItemPhaseRun();
                 break;
             default:
-                Debug.Log($"{currentPhase}½×¶Îµã»÷ Íê³É Ã»ÓÐ×÷ÓÃ");
+                Debug.Log($"{currentPhase}ï¿½×¶Îµï¿½ï¿½ ï¿½ï¿½ï¿½ Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
                 break;
         }
     }
+
+}
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class GameManager : MonoBehaviour
+{
+    public Player player = new Player();
+    public Monster monster = new Monster();
+
+    public List<FearCard> playDecks = new List<FearCard>();
+    public List<FearCard> monsterDecks = new List<FearCard>();
+    public List<GameItem> itemTemplete = new List<GameItem>();
+    public Transform[] cardSlots;
+
+    public GameObject cardPrefab;
+    public CardTargetArea cardTargetArea;
+    public Button cardConfirmBtn;
+
+    private enum GamePhase { Start, Cover, Item, Resolve, End }
+    private GamePhase currentPhase;
+    private int currentRound;
+
+    private FearCard playerSelectedCard; // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
+    private FearCard monsterSelectedCard; // ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½
+
+    //-------------------------------------------------------
+    public Animator monsterAnimator;
+    public TugOfWarUI gameboard;
+    private int playerScore;
+    private int monsterScore;
+
+    //ï¿½ï¿½Ê¼ï¿½ï¿½
+    private void Awake()
+    {
+        InitGame();
+        playerScore = 4;
+        monsterScore = 4;
+        monster.SetAnimator(monsterAnimator);
+    }
+
+    private void InitGame()
+    {
+        currentRound = 1;
+        currentPhase = GamePhase.Start;
+
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½
+        InitDecks(player, monster, 1, 5);
+
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        player.InitCards(playDecks);
+        monster.InitCards(monsterDecks);
+        RefreshPlayerCardUI(player);
+
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        InitGameItems(player, monster);
+
+        ChangeToNextPhase();
+    }
+    #region ï¿½×¶ï¿½ï¿½ß¼ï¿½
+    private void ChangeToNextPhase()
+    {
+        switch (currentPhase)
+        {
+            case GamePhase.Start:
+                StartRound();
+                break;
+            case GamePhase.Cover:
+                CoverPhase();
+                break;
+            case GamePhase.Item:
+                ItemPhase();
+                break;
+            case GamePhase.Resolve:
+                ResolvePhase();
+                break;
+            case GamePhase.End:
+                EndPhase();
+                break;
+        }
+    }
+
+    private void StartRound()
+    {
+        Debug.Log($"ï¿½Øºï¿½ {currentRound} ï¿½ï¿½Ê¼");
+
+        //ï¿½ï¿½ï¿½ï¿½
+        //ï¿½ï¿½ï¿½Ä»ØºÏ¿ï¿½Ê¼Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        if (currentRound == 4)
+        {
+            Debug.Log("Ë«ï¿½ï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½");
+            // ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½
+            for (int i = 0; i < 2; i++)
+            {
+                player.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                monster.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+            }
+        }
+        //ï¿½ï¿½Ò»ï¿½×¶ï¿½
+        currentPhase = GamePhase.Cover;
+        ChangeToNextPhase();
+    }
+
+    private void CoverPhase()
+    {
+        Debug.Log("ï¿½ï¿½ï¿½Æ½×¶Î¿ï¿½Ê¼");
+
+        cardConfirmBtn.image.color = Color.white;
+
+        //ï¿½ï¿½ï¿½È·ï¿½ï¿½
+        cardConfirmBtn.onClick.AddListener(OnClickedConfirmButton);
+
+    }
+
+    private void OnClickedConfirmButton()
+    {
+        //ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+        playerSelectedCard = cardTargetArea.GetAreaCard();
+
+        if (playerSelectedCard == null)
+        {
+            Debug.Log("Î´Ñ¡ï¿½ï¿½ï¿½Æ£ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Æºï¿½È·ï¿½Ï£ï¿½");
+            return;
+        }
+
+        Debug.Log($"ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½Æ£ï¿½{playerSelectedCard.cardName}");
+
+        CardTun cardTun = cardTargetArea.GetComponentInChildren<CardTun>();
+        if (cardTun != null)
+        {
+            cardTun.StartFront();
+        }
+        else
+        {
+            Debug.LogWarning("Ñ¡ï¿½ÐµÄ¿ï¿½ï¿½ï¿½Ã»ï¿½Ð¹ï¿½ï¿½ï¿½ CardTun ï¿½Å±ï¿½");
+        }
+        //ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½
+        List<FearCard> monsterCards = monster.GetCards();
+        monsterSelectedCard = monsterCards[Random.Range(0, monsterCards.Count)];
+        Debug.Log($"ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½Ë¿ï¿½ï¿½Æ£ï¿½{monsterSelectedCard.cardName}");
+
+        // ï¿½ï¿½ï¿½Ã¡ï¿½È·ï¿½Ï¡ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        cardConfirmBtn.onClick.RemoveListener(OnClickedConfirmButton);
+        cardConfirmBtn.image.color = Color.gray;
+
+        
+
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
+        currentPhase = GamePhase.Item;
+
+        //ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½
+        //currentPhase = GamePhase.Resolve;
+
+        ChangeToNextPhase();
+    }
+
+    /*    private void ItemPhase()
+        {
+            Debug.Log("ï¿½ï¿½ï¿½ß½×¶Î¿ï¿½Ê¼");
+
+            //ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½
+
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½Ñ­ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
+            //ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½Ñ­ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½Ð§
+            //ï¿½ï¿½Ò»ï¿½×¶ï¿½
+        }*/
+
+    private void ItemPhase()
+    {
+        Debug.Log("ï¿½ï¿½ï¿½ß½×¶Î¿ï¿½Ê¼");
+
+        // ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¹ï¿½ï¿½
+        //HandlePlayerItems();
+
+        // ï¿½ï¿½ï¿½ï¿½Ñ¡ï¿½ï¿½Ê¹ï¿½ÃµÄµï¿½ï¿½ß»ï¿½ï¿½ï¿½
+        List<GameItem> monsterItems = monster.GetItems();
+        if (monsterItems.Count > 0)
+        {
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            GameItem selectedItem = monsterItems[Random.Range(0, monsterItems.Count)];
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½Ëµï¿½ï¿½ß£ï¿½{selectedItem.itemName}");
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ØµÄ¶ï¿½ï¿½ï¿½
+            monster.PlaySpecialAnimation(selectedItem);
+            // ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½Ù½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
+            StartCoroutine(WaitForMonsterAnimation(selectedItem));
+
+            // ï¿½Æ³ï¿½ï¿½ï¿½Ê¹ï¿½ÃµÄµï¿½ï¿½ï¿½
+            monster.RemoveItem(selectedItem);
+        }
+        else
+        {
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð¿ï¿½ï¿½ÃµÄµï¿½ï¿½ï¿½");
+        }
+    }
+    private IEnumerator WaitForMonsterAnimation(GameItem selectedItem)
+    {
+        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+        AnimatorStateInfo currentState = monsterAnimator.GetCurrentAnimatorStateInfo(0);
+        float animationDuration = currentState.length;
+
+        // ï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        yield return new WaitForSeconds(3f * animationDuration);
+        // ï¿½Øµï¿½ Idle ×´Ì¬
+        monsterAnimator.SetTrigger("TriggerIdle");
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
+        currentPhase = GamePhase.Resolve;
+        ChangeToNextPhase();
+    }
+
+
+    private void ResolvePhase()
+    {
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½×¶Î¿ï¿½Ê¼");
+
+        int playerPoint = playerSelectedCard.point;
+        int monsterPoint = monsterSelectedCard.point;
+
+        if (playerPoint > monsterPoint)
+        {
+            monster.IncreaseFearValue(1);
+            Debug.Log($"ï¿½ï¿½Ò»ï¿½Ê¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ö¾ï¿½Öµ ({monster.GetFearValue()})");
+            gameboard.UpdateBars(++playerScore, --monsterScore);
+        }
+        else if (playerPoint < monsterPoint)
+        {
+            player.IncreaseFearValue(1);
+            Debug.Log($"ï¿½ï¿½ï¿½Ë»ï¿½Ê¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ö¾ï¿½Öµ ({player.GetFearValue()})");
+            gameboard.UpdateBars(--playerScore, ++monsterScore);
+        }
+        else
+        {
+            monster.IncreaseFearValue(1);
+            player.IncreaseFearValue(1);
+            Debug.Log($"Æ½ï¿½Ö£ï¿½Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½1ï¿½Ö¾ï¿½Öµ({player.GetFearValue()}):({monster.GetFearValue()})");
+        }
+        player.UseCard(playerSelectedCard);
+        monster.UseCard(monsterSelectedCard);
+        cardTargetArea.ClearReadyToUseCard();
+
+        RefreshPlayerCardUI(player);
+
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
+        currentPhase = GamePhase.End;
+        ChangeToNextPhase();
+
+        //ï¿½ï¿½È¡Ë«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //ï¿½Èµã£¬Ð¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ó¿Ö¾ï¿½Öµ
+        //ï¿½ï¿½Ò»ï¿½×¶ï¿½
+    }
+
+    private void EndPhase()
+    {
+        Debug.Log("ï¿½ØºÏ½ï¿½ï¿½ï¿½ï¿½×¶ï¿½");
+
+        // ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö¾ï¿½Öµï¿½ïµ½3
+        if (player.GetFearValue() >= 3)
+        {
+            Debug.Log("ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½");
+            // Ê§ï¿½ï¿½ï¿½ß¼ï¿½
+        }
+        else if (monster.GetFearValue() >= 3)
+        {
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü£ï¿½");
+            // Ê¤ï¿½ï¿½ï¿½ß¼ï¿½
+        }
+        else
+        {
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Øºï¿½
+            currentRound++;
+            currentPhase = GamePhase.Start;
+            ChangeToNextPhase();
+        }
+    }
+    #endregion
+
+    private List<int> RandomCardPoints(int totalPoints, int cardCount, int minPoint, int maxPoint)
+    {
+        List<int> points = new List<int>();
+
+        while (points.Count < cardCount)
+        {
+            // Ê¹ï¿½ï¿½Ò»ï¿½ï¿½ï¿½òµ¥µÄ¼ï¿½È¨ï¿½ß¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½ï¿½Ê¸ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            float randomValue = Random.Range(0f, 1f); // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½[0, 1]ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½
+
+            // (ï¿½ï¿½Ê¼Öµaï¿½ï¿½ï¿½ï¿½Ö¹Öµbï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½t) ï¿½ï¿½ï¿½ï¿½a = 0, b = 1, t = 0, ï¿½ò·µ»ï¿½ÖµÎª0
+            int point = Mathf.RoundToInt(Mathf.Lerp(minPoint, maxPoint, randomValue * randomValue)); // Æ½ï¿½ï¿½È¨ï¿½ï¿½Ê¹ï¿½Ð¼ï¿½ï¿½ï¿½ï¿½
+
+            if (point > 0 && point <= maxPoint && totalPoints - point >= minPoint * (cardCount - points.Count - 1))
+            {
+                points.Add(point);
+                totalPoints -= point;
+            }
+        }
+
+        // ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½Ê¹Ã¿ï¿½Î·ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ï¿½
+        for (int i = 0; i < points.Count; i++)
+        {
+            int swapIndex = Random.Range(0, points.Count);
+            (points[i], points[swapIndex]) = (points[swapIndex], points[i]);
+        }
+
+        return points;
+    }
+
+
+    public void InitDecks(Player player, Monster monster,int startPoint, int endPoint)
+    {
+        List<int> points = RandomCardPoints(25, 5, startPoint, endPoint);
+        for (int i = 0; i < points.Count; i++)
+        {
+            string cardName = $"ï¿½ï¿½Ò¿ï¿½{i}";
+            playDecks.Add(new FearCard(cardName, points[i]));
+        }
+        player.ResetFearValue();
+
+        points = RandomCardPoints(25, 5, startPoint, endPoint);
+        for (int i = 0; i < points.Count; i++)
+        {
+            string cardName = $"ï¿½ï¿½ï¿½Ë¿ï¿½{i}";
+            monsterDecks.Add(new FearCard(cardName, points[i]));
+            Debug.Log($"ï¿½ï¿½ï¿½Ë¿ï¿½{i}ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½{points[i]}");
+        }
+        monster.ResetFearValue();
+    }
+
+    public void RefreshPlayerCardUI(Player player)
+    {
+        List<FearCard> cards = player.GetCards();
+        if (cards.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = 0; i < cards.Count; ++i)
+        {
+            FearCard card = cards[i];
+
+            // ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ FearCardUIï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð£ï¿½Êµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
+            FearCardUI cardUI = cardSlots[i].GetComponentInChildren<FearCardUI>();
+            if (cardUI == null)
+            {
+                Debug.Log($"Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {i} ï¿½ï¿½ï¿½Æµï¿½ UIï¿½ï¿½{card.cardName}");
+                cardUI = Instantiate(cardPrefab, cardSlots[i]).GetComponent<FearCardUI>();
+            }
+
+            // ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            cardUI.SetUI(card, cardSlots[i]);
+
+            // ï¿½ï¿½ï¿½Ý¿ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI
+            if (card.isUsed)
+            {
+                Debug.Log($"ï¿½ï¿½ï¿½Øµï¿½ {i} ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½{card.cardName}");
+                cardUI.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.Log($"ï¿½ï¿½Ê¾ï¿½ï¿½ {i} ï¿½ï¿½Î´Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½{card.cardName}");
+                cardUI.gameObject.SetActive(true);
+                cardUI.gameObject.transform.localPosition = Vector3.zero;
+            }
+        }
+    }
+
+    public void InitGameItems(Player player, Monster monster)
+    {
+        itemTemplete.Add(new PeekItem());
+        itemTemplete.Add(new ChangeCardItem());
+        itemTemplete.Add(new TauntItem());
+        itemTemplete.Add(new EncourageItem());
+        itemTemplete.Add(new SwapCardPointsItem());
+
+        for (int i = 0; i < 3; i++)
+        {
+            player.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            monster.AddItem(itemTemplete[Random.Range(0, itemTemplete.Count)]);
+        }
+    }
+
+    //ï¿½ï¿½ï¿½Æ½×¶ï¿½
+    //ï¿½ï¿½ï¿½Ñ¡ï¿½Æ£ï¿½AIÑ¡ï¿½Æ£ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
+
+    //ï¿½ï¿½ï¿½ß½×¶ï¿½
+    //ï¿½ï¿½ï¿½Öµï¿½ï¿½ß£ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Ö±ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ß£ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Ö±ï¿½ï¿½Ñ¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½×¶ï¿½
+
+    //ï¿½ï¿½ï¿½ï¿½×¶ï¿½
+    //ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½Èµã£¬ï¿½ï¿½ï¿½ã£¬ï¿½Û·ï¿½
+
+    //ï¿½ØºÏ½ï¿½ï¿½ï¿½
+    //ï¿½ï¿½ï¿½ß¿ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½Ç·ï¿½Ê¤ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½Øºï¿½
+
+    //Ê¤ï¿½Ü½×¶ï¿½
+    //Õ¹Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¿ï¿½
+
 
 }

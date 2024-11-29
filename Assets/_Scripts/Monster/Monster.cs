@@ -10,7 +10,7 @@ public class Monster:ICardManager
     private int fearValue = 0;
     private bool isBanned = false;
 
-    #region ¿¨ÅÆ²Ù×÷
+    #region ï¿½ï¿½ï¿½Æ²ï¿½ï¿½ï¿½
     public void AddCard(FearCard card)
     {
         handingCards.Add(card);
@@ -36,9 +36,9 @@ public class Monster:ICardManager
 
     public void UseCard(FearCard card)
     {
-        //TODO:¿¨ÅÆÊ¹ÓÃÐ§¹û
+        //TODO:ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½Ð§ï¿½ï¿½
 
-        Debug.Log("Ê¹ÓÃ¿¨ÅÆ£º" + card.cardName + "µãÊýÎª£º" + card.point);
+        Debug.Log("Ê¹ï¿½Ã¿ï¿½ï¿½Æ£ï¿½" + card.cardName + "ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½" + card.point);
 
         RemoveCard(card);
     }
@@ -49,7 +49,7 @@ public class Monster:ICardManager
     }
     #endregion
 
-    #region ¿Ö¾åÖµ²Ù×÷
+    #region ï¿½Ö¾ï¿½Öµï¿½ï¿½ï¿½ï¿½
     public void ResetFearValue()
     {
         fearValue = 0;
@@ -66,7 +66,7 @@ public class Monster:ICardManager
     }
     #endregion
 
-    #region µÀ¾ß²Ù×÷
+    #region ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½
     public void AddItem(GameItem item)
     {
         items.Add(item);
@@ -82,6 +82,35 @@ public class Monster:ICardManager
         items.Remove(item);
     }
     #endregion
-
+    
+    public void PlaySpecialAnimation(GameItem selectedItem)
+    {
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator Î´ï¿½ï¿½Ê¼ï¿½ï¿½");
+            return;
+        }
+        switch (selectedItem.itemName)
+        {
+            case "ï¿½ï¿½ï¿½ï¿½":
+                animator.SetTrigger("TriggerDentalCard");
+                break;
+            case "×³ï¿½ï¿½":
+                animator.SetTrigger("TriggerJokerCard");
+                break;
+            case "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½":
+                animator.SetTrigger("TriggerDogCard");
+                break;
+            case "ï¿½ï¿½ï¿½ï¿½":
+                animator.SetTrigger("TriggerChristmasCard");
+                break;
+            case "ï¿½ï¿½ï¿½ï¿½":
+                animator.SetTrigger("TriggerGhostCard");
+                break;
+            default:
+                Debug.Log("Ã»ï¿½Ð¶ï¿½Ó¦ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
+                break;
+        }
+    }
 
 }

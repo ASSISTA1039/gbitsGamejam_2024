@@ -18,22 +18,22 @@ public class CardTargetArea : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("Card")) // Èç¹û½øÈëÄ¿±êÇøÓòµÄÊÇ¿¨ÅÆ
+        if (other.CompareTag("Card")) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½
         {
             FearCardUI cardUI = other.GetComponent<FearCardUI>();
             if (cardUI != null)
             {
-                // Îü¸½¿¨ÅÆµ½Ä¿±êÇøÓò
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 cardUI.SnapToTarget(transform);
             }
         }
 
-        if (other.CompareTag("Item")) // Èç¹û½øÈëÄ¿±êÇøÓòµÄÊÇ¿¨ÅÆ
+        if (other.CompareTag("Item")) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½
         {
             GameItemUI itemUI = other.GetComponent<GameItemUI>();
             if (itemUI != null)
             {
-                // Îü¸½µÀ¾ßµ½Ä¿±êÇøÓò
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 itemUI.SnapToTarget(transform);
             }
         }
@@ -41,23 +41,23 @@ public class CardTargetArea : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Card")) // Èç¹û¿¨ÅÆÀë¿ªÄ¿±êÇøÓò
+        if (other.CompareTag("Card")) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¿ªÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
             FearCardUI cardUI = other.GetComponent<FearCardUI>();
             if (cardUI != null && cardUI == readyToUseCardUI)
             {
-                // »Ö¸´¿¨ÅÆÔ­Î»
+                // ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ô­Î»
                 cardUI.ResetPosition();
                 readyToUseCardUI = null;
             }
         }
 
-        if (other.CompareTag("Item")) // Èç¹û¿¨ÅÆÀë¿ªÄ¿±êÇøÓò
+        if (other.CompareTag("Item")) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¿ªÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         {
             GameItemUI itemUI = other.GetComponent<GameItemUI>();
             if (itemUI != null && itemUI == readyToUseItemUI )
             {
-                // »Ö¸´µÀ¾ßÔ­Î»
+                // ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Ô­Î»
                 itemUI.ResetPosition();
                 readyToUseItemUI = null;
             }
