@@ -5,12 +5,10 @@ using UnityEngine;
 public class CardTargetArea : MonoBehaviour
 {
     private FearCardUI readyToUseCardUI = null;
-
     public FearCard GetAreaCard()
     {
         return readyToUseCardUI.card;
-    }    
-
+    }
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Card")) // 如果进入目标区域的是卡牌

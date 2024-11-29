@@ -9,7 +9,7 @@ public class Player : ICardManager
     private static List<FearCard> usedCards = new List<FearCard>();
 
     private int fearValue = 0;
-    private bool isBanned = false;
+    //private bool isBanned = false;
 
     //≥ı ºªØ
     public void AddCard(FearCard card)

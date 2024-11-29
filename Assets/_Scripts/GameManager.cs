@@ -24,10 +24,19 @@ public class GameManager : MonoBehaviour
     private FearCard playerSelectedCard; // 玩家选择的卡牌
     private FearCard monsterSelectedCard; // 敌人选择的卡牌
 
+    //-------------------------------------------------------
+    public Animator monsterAnimator;
+    public TugOfWarUI gameboard;
+    private int playerScore;
+    private int monsterScore;
+
     //初始化
     private void Awake()
     {
         InitGame();
+        playerScore = 4;
+        monsterScore = 4;
+        monster.SetAnimator(monsterAnimator);
     }
 
     private void InitGame()
@@ -100,6 +109,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("盖牌阶段开始");
 
         cardConfirmBtn.image.color = Color.white;
+
         //玩家确认
         cardConfirmBtn.onClick.AddListener(OnClickedConfirmButton);
 
@@ -118,6 +128,15 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"玩家选择了卡牌：{playerSelectedCard.cardName}");
 
+        CardTun cardTun = cardTargetArea.GetComponentInChildren<CardTun>();
+        if (cardTun != null)
+        {
+            cardTun.StartFront();
+        }
+        else
+        {
+            Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
+        }
         //敌人选卡
         List<FearCard> monsterCards = monster.GetCards();
         monsterSelectedCard = monsterCards[Random.Range(0, monsterCards.Count)];
@@ -130,26 +149,69 @@ public class GameManager : MonoBehaviour
         
 
         // 进入下一阶段
-        //currentPhase = GamePhase.Item;
+        currentPhase = GamePhase.Item;
 
         //测试结算
-        currentPhase = GamePhase.Resolve;
+        //currentPhase = GamePhase.Resolve;
 
         ChangeToNextPhase();
     }
+
+    /*    private void ItemPhase()
+        {
+            Debug.Log("道具阶段开始");
+
+            //判断先手
+
+            //玩家先手，循环选择道具，道具生效
+            //玩家确认用完
+
+            //敌人先手，循环选择道具，生效
+            //下一阶段
+        }*/
 
     private void ItemPhase()
     {
         Debug.Log("道具阶段开始");
 
-        //判断先手
+        // 玩家选择道具并生效的逻辑（待扩展）
+        //HandlePlayerItems();
 
-        //玩家先手，循环选择道具，道具生效
-        //玩家确认用完
+        // 敌人选择使用的道具或卡牌
+        List<GameItem> monsterItems = monster.GetItems();
+        if (monsterItems.Count > 0)
+        {
+            // 敌人随机使用一个道具
+            GameItem selectedItem = monsterItems[Random.Range(0, monsterItems.Count)];
+            Debug.Log($"敌人使用了道具：{selectedItem.itemName}");
+            // 播放与道具相关的动画
+            monster.PlaySpecialAnimation(selectedItem);
+            // 等待动画完成后再进入下一阶段
+            StartCoroutine(WaitForMonsterAnimation(selectedItem));
 
-        //敌人先手，循环选择道具，生效
-        //下一阶段
+            // 移除已使用的道具
+            monster.RemoveItem(selectedItem);
+        }
+        else
+        {
+            Debug.Log("敌人没有可用的道具");
+        }
     }
+    private IEnumerator WaitForMonsterAnimation(GameItem selectedItem)
+    {
+        // 获取动画的持续时间
+        AnimatorStateInfo currentState = monsterAnimator.GetCurrentAnimatorStateInfo(0);
+        float animationDuration = currentState.length;
+
+        // 等待动画播放完成
+        yield return new WaitForSeconds(3f * animationDuration);
+        // 回到 Idle 状态
+        monsterAnimator.SetTrigger("TriggerIdle");
+        // 动画完成后进入下一阶段
+        currentPhase = GamePhase.Resolve;
+        ChangeToNextPhase();
+    }
+
 
     private void ResolvePhase()
     {
@@ -162,11 +224,13 @@ public class GameManager : MonoBehaviour
         {
             monster.IncreaseFearValue(1);
             Debug.Log($"玩家获胜，敌人增加一点恐惧值 ({monster.GetFearValue()})");
+            gameboard.UpdateBars(++playerScore, --monsterScore);
         }
         else if (playerPoint < monsterPoint)
         {
             player.IncreaseFearValue(1);
             Debug.Log($"敌人获胜，玩家增加一点恐惧值 ({player.GetFearValue()})");
+            gameboard.UpdateBars(--playerScore, ++monsterScore);
         }
         else
         {

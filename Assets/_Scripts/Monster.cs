@@ -8,7 +8,14 @@ public class Monster:ICardManager
     private static List<GameItem> items = new List<GameItem>();
 
     private int fearValue = 0;
-    private bool isBanned = false;
+    //private bool isBanned = false;
+
+    //-----------------------------
+    private Animator animator;
+    public void SetAnimator(Animator animator)
+    {
+        this.animator = animator;
+    }
 
     //初始化
     public void AddCard(FearCard card)
@@ -25,7 +32,6 @@ public class Monster:ICardManager
             {
                 card.isUsed = false;
                 AddCard(card);
-
             }
         }
 
@@ -78,5 +84,35 @@ public class Monster:ICardManager
     public void RemoveItem(GameItem item)
     {
         items.Remove(item);
+    }
+
+    public void PlaySpecialAnimation(GameItem selectedItem)
+    {
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator 未初始化");
+            return;
+        }
+        switch (selectedItem.itemName)
+        {
+            case "讥讽":
+                animator.SetTrigger("TriggerDentalCard");
+                break;
+            case "壮胆":
+                animator.SetTrigger("TriggerJokerCard");
+                break;
+            case "交换吓人点数":
+                animator.SetTrigger("TriggerDogCard");
+                break;
+            case "换卡":
+                animator.SetTrigger("TriggerChristmasCard");
+                break;
+            case "窥视":
+                animator.SetTrigger("TriggerGhostCard");
+                break;
+            default:
+                Debug.Log("没有对应的动画触发器！");
+                break;
+        }
     }
 }
