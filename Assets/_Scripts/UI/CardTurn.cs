@@ -14,11 +14,11 @@ public class CardTun : MonoBehaviour
 
     public GameObject mFront;
     public GameObject mBack;
-    public CardState mCardState = CardState.Front;  //¿¨ÅÆµ±Ç°µÄ×´Ì¬£¬ÊÇÕýÃæ»¹ÊÇ±³Ãæ
-    public float mTime = 0.3f;
-    public bool isActive = false;       //true´ú±íÕýÔÚÖ´ÐÐ·­×ª£¬²»Ðí±»´ò¶Ï
+    public CardState mCardState = CardState.Front;  //ï¿½ï¿½ï¿½Æµï¿½Ç°ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ»¹ï¿½Ç±ï¿½ï¿½ï¿½
+    public float mTime = 0.5f;
+    public bool isActive = false;       //trueï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½Ð·ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
-    // ³õÊ¼»¯¿¨ÅÆ½Ç¶È£¬¸ù¾ÝmCardState
+    // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Æ½Ç¶È£ï¿½ï¿½ï¿½ï¿½ï¿½mCardState
     public void Init()
     {
         if (mCardState == CardState.Front)
@@ -38,7 +38,7 @@ public class CardTun : MonoBehaviour
         Init();
     }
 
-    //·´×ª
+    //ï¿½ï¿½×ª
     public void StartBack()
     {
         if (isActive)
@@ -47,7 +47,7 @@ public class CardTun : MonoBehaviour
         }
         StartCoroutine(ToBack());
     }
-    //×ªÕý
+    //×ªï¿½ï¿½
     public void StartFront()
     {
         if (isActive)

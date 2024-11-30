@@ -5,32 +5,44 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class GameManager : MonoBehaviour
 {
-    public Player player = new Player();
+    public Player girl = new Player();
     public Player monster = new Player();
     public TugOfWarUI tugUI;
 
-    public List<FearCard> playDecks = new List<FearCard>();
+    public List<FearCardSO> girlDecksSO;
+    public List<FearCardSO> monsterDecksSO;
+    public List<FearCard> girlDecks = new List<FearCard>();
     public List<FearCard> monsterDecks = new List<FearCard>();
     public List<GameItem> itemPool = new List<GameItem>();
+    public List<Sprite> itemSprites;
     public Transform[] cardSlots;
     public Transform[] itemSlots;
 
     public GameObject cardPrefab;
     public GameObject itemPrefab;
-    public CardTargetArea cardTargetArea;
+    public CardTargetArea monsterCardArea;
+    public ItemTargetArea monsterItemArea;
+    public Transform monsterTransform;
+    public Transform girlTransform;
+    public Transform girlCardArea;
+    public Transform girlItemArea;
+    public FearCardUI girlCardUI;
+    public GameItemUI girlItemUI;
     public Button confirmBtn;
     public Button finishBtn;
 
-    public TextMeshProUGUI playerCardDisplay;
-    public TextMeshProUGUI monsterCardDisplay;
-    public TextMeshProUGUI roundDisplay;
-    public TextMeshProUGUI playerValueTMP;
-    public TextMeshProUGUI monsterValueTMP;
+    public TextMeshProUGUI monsterPointText;
+    private int monsterSurplusPoint = 25;
+    public TextMeshProUGUI girlPointText;
+    private int girlSurplusPoint = 25;
+    public CardTun roundDisplay;
+    public Sprite[] roundSprites;
 
-    public Animator playerAnimator; 
+    public Animator girlAnimator; 
     public Animator monsterAnimator;
     public AudioSource audioSource;  // AudioSource for playing sound effects
     public AudioClip dealCardSound; // Sound effect for dealing cards
@@ -42,14 +54,26 @@ public class GameManager : MonoBehaviour
     private GamePhase currentPhase;
     private int currentRound;
 
-    private FearCard playerSelectedCard; // ���ѡ��Ŀ���
-    private FearCard monsterSelectedCard; // ����ѡ��Ŀ���
+    private FearCard monsterSelectedCard; // ���ѡ��Ŀ���
+    private FearCard girlSelectedCard; // ����ѡ��Ŀ���
 
     //��ʼ��
     private void Awake()
     {
         cardPrefab = Resources.Load<GameObject>("CardTemplete");
         itemPrefab = Resources.Load<GameObject>("ItemTemplete");
+        monsterCardArea = transform.Find("MonsterCardArea").GetComponent<CardTargetArea>();
+        monsterItemArea = transform.Find("MonsterItemArea").GetComponent<ItemTargetArea>();
+        monsterTransform = transform.Find("Panel/Monster").GetComponent<Transform>();
+        girlTransform = transform.Find("Panel/Girl").GetComponent<Transform>();
+        girlCardArea = transform.Find("GirlCardArea").GetComponent<Transform>();
+        girlItemArea = transform.Find("GirlItemArea").GetComponent<Transform>();
+        girlAnimator = girlTransform.gameObject.GetComponent<Animator>();
+
+        monsterPointText = transform.Find("MonsterSurplus/Point").GetComponent<TextMeshProUGUI>();
+        girlPointText = transform.Find("GirlSurplus/Point").GetComponent<TextMeshProUGUI>();
+        roundDisplay = transform.Find("Round").GetComponent<CardTun>();
+
         audioSource = GetComponent<AudioSource>();
 
         DOTween.Init();
@@ -60,19 +84,19 @@ public class GameManager : MonoBehaviour
 
     private void InitGame()
     {
+        EnableButton(confirmBtn, false, null);
+        EnableButton(finishBtn, false, null);
         currentRound = 1;
 
         // ��ʼ�����Ƴ�
-        InitDecks(player, monster, 1, 5);
+        InitDecks(monster, girl, 1, 5);
 
         // ��ʼ��˫������
-        player.InitCards(playDecks);
         monster.InitCards(monsterDecks);
-        //RefreshPlayerCardUI(player);
+        girl.InitCards(girlDecks);
 
         // ��ʼ��˫������
-        InitGameItems(player, monster);
-        //RefreshPlayerItemUI(player, null);
+        InitGameItems(monster, girl);
 
         currentPhase = GamePhase.Start;
         RunPhase();
@@ -80,7 +104,9 @@ public class GameManager : MonoBehaviour
 
     private void RunPhase()
     {
-        roundDisplay.text = $"回合数：{currentRound}";
+        roundDisplay.mFront.GetComponent<Image>().sprite = roundSprites[(currentRound - 1 + roundSprites.Length) % roundSprites.Length];
+        roundDisplay.mBack.GetComponent<Image>().sprite = roundSprites[(currentRound - 1) % roundSprites.Length];
+        roundDisplay.StartBack();
         switch (currentPhase)
         {
             case GamePhase.Start:
@@ -105,8 +131,8 @@ public class GameManager : MonoBehaviour
     private void StartRound()
     {
         Debug.Log($"回合{currentRound} 开始");
-        playerCardDisplay.text = $"玩家的卡牌点数：无";
-        monsterCardDisplay.text = $"敌人的卡牌点数：无";
+        monsterPointText.text = $"{monsterSurplusPoint}";
+        girlPointText.text = $"{girlSurplusPoint}";
         //����
         //���ĻغϿ�ʼ˫������2������
         if (currentRound == 3)
@@ -115,7 +141,7 @@ public class GameManager : MonoBehaviour
             // ���ӵ����߼�������չ��
             for (int i = 0; i < 2; i++)
             {
-                player.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
+                girl.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
             }
             for (int i = 0; i < 2; i++)
             {
@@ -131,15 +157,13 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PlayDealCardsAnimation()
     {
-        // ���ŷ��ƶ���
-        //playerAnimator.SetTrigger("DealCards"); // Trigger "DealCards" animation
-        //monsterAnimator.SetTrigger("DealCards");
 
         //���ص���UI��Ȼ����ʾ����UI
         HidePlayerCardUI();
         HidePlayerItemUI();
+        yield return new WaitForSecondsRealtime(2f);
 
-        List<FearCard> cards = player.GetCards();
+        List<FearCard> cards = monster.GetCards();
         if (cards.Count == 0)
         {
             yield return null;
@@ -170,27 +194,17 @@ public class GameManager : MonoBehaviour
             else
             {
                 Debug.Log($"显示第 {i} 张未使用卡牌：{card.cardName}");
+                cardUI.gameObject.transform.position = monsterTransform.transform.position;
                 cardUI.gameObject.SetActive(true);
-                cardUI.gameObject.transform.position = cardTargetArea.transform.position;
                 cardUI.transform.DOMove(cardSlots[i].position, 1f).SetEase(Ease.InOutQuad);
-                yield return new WaitForSeconds(1f); // �ӳ�һ�£�ȷ��ÿ�ſ����е�ʱ�们��
+                // ���ŷ�����Ч
+                //audioSource.PlayOneShot(dealCardSound);
+                yield return new WaitForSecondsRealtime(1f); // �ӳ�һ�£�ȷ��ÿ�ſ����е�ʱ�们��
             }
 
         }
 
-        //// ���ƶ�����ÿ�ſ��ƴ� cardTargetArea ��������Ӧ�� cardSlots
-        //for (int i = 0; i < cardSlots.Length; i++)
-        //{
-        //    var card = player.GetCards()[i];
-        //    var cardObj = Instantiate(cardPrefab, cardTargetArea.transform.position, Quaternion.identity);
-        //    cardObj.GetComponent<FearCardUI>().SetUI(card, cardSlots[i]);
-            
-        //}
-
-        // ���ŷ�����Ч
-        //audioSource.PlayOneShot(dealCardSound);
-
-        yield return new WaitForSeconds(2f); // �ȴ���������Ч�������
+        yield return new WaitForSecondsRealtime(1f); // �ȴ���������Ч�������
 
         // ���ƽ��������ѡ���ƽ׶�
         currentPhase = GamePhase.Cover;
@@ -210,16 +224,16 @@ public class GameManager : MonoBehaviour
 
     private void CoverPhaseConfirm()
     {
-        if(cardTargetArea.GetAreaCard() == null)
+        if(monsterCardArea.GetAreaCard() == null)
         {
             Debug.Log("未选择卡牌，请选择卡牌后 确认！");
             return;
         }
         //���ѡ��
-        playerSelectedCard = cardTargetArea.GetAreaCard();
-        Debug.Log($"玩家选择了卡牌：{playerSelectedCard.cardName}");
+        monsterSelectedCard = monsterCardArea.GetAreaCard();
+        Debug.Log($"玩家选择了卡牌：{monsterSelectedCard.cardName}");
 
-        CardTun cardTun = cardTargetArea.GetComponentInChildren<CardTun>();
+        CardTun cardTun = monsterCardArea.GetComponentInChildren<CardTun>();
         if (cardTun != null)
         {
             cardTun.StartBack();
@@ -233,44 +247,54 @@ public class GameManager : MonoBehaviour
 
     private void CoverPhaseRun()
     {
-        //if(confirmBtn.interactable == true)
-        //{
-        //    CoverPhaseConfirm();
-        //}
-
-        if (playerSelectedCard == null)
+        if (monsterSelectedCard == null)
         {
             Debug.Log("未选择卡牌，请选择卡牌后 结束！");
             return;
         }
 
-        Debug.Log($"玩家选择了卡牌：{playerSelectedCard.cardName}");
+        Debug.Log($"玩家选择了卡牌：{monsterSelectedCard.cardName}");
 
         //����ѡ��
-        List<FearCard> monsterCards = monster.GetCards();
-        monsterSelectedCard = monsterCards[Random.Range(0, monsterCards.Count)];
-        Debug.Log($"敌人选择了卡牌：{monsterSelectedCard.cardName}");
+        List<FearCard> girlCards = girl.GetCards();
+        girlSelectedCard = girlCards[Random.Range(0, girlCards.Count)];
+        Debug.Log($"敌人选择了卡牌：{girlSelectedCard.cardName}");
 
-        playerCardDisplay.text = $"玩家的卡牌点数：{playerSelectedCard.point}";
-        monsterCardDisplay.text = $"敌人的卡牌点数：{monsterSelectedCard.point}";
+        monsterPointText.text = $"{monsterSurplusPoint}";
+        girlPointText.text = $"{girlSurplusPoint}";
 
         EnableButton(confirmBtn, false, null);
         EnableButton(finishBtn, false, null);
 
-        // ������һ�׶�
-        currentPhase = GamePhase.Item;
+        StartCoroutine(PlaySelectedCardAnimation(girlSelectedCard));
 
-        RunPhase();
+        monsterSurplusPoint -= monsterSelectedCard.point;
+        girlSurplusPoint -= girlSelectedCard.point;
     }
 
-    public FearCard GetPlayerSelectedCard()
+    private IEnumerator PlaySelectedCardAnimation(FearCard enemyCard)
     {
-        return playerSelectedCard;
+        girlCardUI = Instantiate(cardPrefab).GetComponent<FearCardUI>();
+        girlCardUI.cardTun.mCardState = CardState.Back;
+        girlCardUI.SetUI(enemyCard, girlCardArea);
+        girlCardUI.transform.SetParent(girlCardArea, false);
+        girlCardUI.gameObject.transform.position = girlTransform.transform.position;
+        girlCardUI.transform.DOMove(girlCardArea.position, 1f).SetEase(Ease.InOutQuad);
+        yield return new WaitForSecondsRealtime(1f+1f);
+
+        // ������һ�׶�
+        currentPhase = GamePhase.Item;
+        RunPhase();
     }
 
     public FearCard GetMonsterSelectedCard()
     {
         return monsterSelectedCard;
+    }
+
+    public FearCard GetGirlSelectedCard()
+    {
+        return girlSelectedCard;
     }
 
     #endregion
@@ -280,16 +304,48 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("道具阶段开始");
 
+        // ��ʾ���� UI
+        StartCoroutine(PlayDealItemsAnimation());
+
+    }
+
+    private IEnumerator PlayDealItemsAnimation()
+    {
+        HidePlayerCardUI();
+        HidePlayerItemUI();
+
+        List<GameItem> items = monster.GetItems();
+        if (items.Count == 0)
+        {
+            yield return null;
+        }
+
+        for (int i = 0; i < items.Count; ++i)
+        {
+            GameItem item = items[i];
+
+            // ��ȡ��ǰ�����е� GameIteUI�����û�У�ʵ����һ����
+            GameItemUI itemUI = itemSlots[i].GetComponentInChildren<GameItemUI>();
+            if (itemUI == null)
+            {
+                Debug.Log($"实例化第 {i} 张牌的 UI：{item.itemName}");
+                itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
+            }
+
+            // ���õ���UI����
+            itemUI.gameObject.transform.localPosition = Vector3.zero;
+            itemUI.SetUI(item, itemSlots[i]);
+            itemUI.gameObject.transform.position = monsterTransform.transform.position;
+            itemUI.transform.DOMove(cardSlots[i].position, 1f).SetEase(Ease.InOutQuad);
+            yield return new WaitForSecondsRealtime(1f); // �ӳ�һ�£�ȷ��ÿ�ſ����е�ʱ�们��
+        }
+
         // ȷ�����ֹ��򣺼���ż���غϵ������֣������غ��������
         bool isPlayerTurn = currentRound % 2 != 0;
 
         EnableButton(finishBtn, true, OnClickedFinishButton);
         // ��ʼ����ʹ�ý׶�
         StartCoroutine(HandleItemPhase(isPlayerTurn));
-
-        // ��ʾ���� UI
-        RefreshPlayerItemUI(player);
-
     }
 
     private IEnumerator HandleItemPhase(bool isPlayerTurn)
@@ -300,12 +356,12 @@ public class GameManager : MonoBehaviour
         while (isPlayerTurn)
         {
             yield return StartCoroutine(HandlePlayerItemUsage());
-            if (player.GetItems().Count == 0 || !finishBtn.interactable)// ���û�е��������
+            if (monster.GetItems().Count == 0 || !finishBtn.interactable)// ���û�е��������
             {
                 while(true)
                 {
                     yield return StartCoroutine(HandleEnemyItemUsage());
-                    if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null) break; // ����û�е��������
+                    if (girl.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null) break; // ����û�е��������
                 }
             }; 
 
@@ -315,20 +371,17 @@ public class GameManager : MonoBehaviour
         while (!isPlayerTurn)
         {
             yield return StartCoroutine(HandleEnemyItemUsage());
-            if (monster.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null)// ����û�е��������
+            if (girl.GetItems().Count == 0 || StartCoroutine(HandleEnemyItemUsage()) == null)// ����û�е��������
             {
                 while (true)
                 {
                     yield return StartCoroutine(HandlePlayerItemUsage());
-                    if (player.GetItems().Count == 0 || !finishBtn.interactable) break;// ���û�е��������
+                    if (monster.GetItems().Count == 0 || !finishBtn.interactable) break;// ���û�е��������
                 }
             }; 
 
         }
 
-        // �����Һ͵��˶�ʹ������ߣ�������һ�׶�
-        currentPhase = GamePhase.Resolve;
-        RunPhase();
     }
 
 
@@ -342,24 +395,28 @@ public class GameManager : MonoBehaviour
         // ����ȷ�ϰ�ť
         EnableButton(confirmBtn, true, () =>
         {
-            selectedItem = cardTargetArea.GetAreaItem(); // ��ȡ���ѡ��ĵ���
+            selectedItem = monsterItemArea.GetAreaItem(); // ��ȡ���ѡ��ĵ���
             if (selectedItem != null)
             {
                 Debug.Log($"玩家使用道具：{selectedItem.itemName}");
-                List<FearCard> cards = selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
-                playerSelectedCard = cards[0];
-                monsterSelectedCard = cards[1];
-                player.RemoveItem(selectedItem);
+                List<FearCard> cards = selectedItem.Use(monster, girl, monsterSelectedCard, girlSelectedCard);
+                monsterSelectedCard = cards[0];
+                girlSelectedCard = cards[1];
+                monster.RemoveItem(selectedItem);
                 itemUsed = true;
 
-                //playerAnimator.SetTrigger($"Trigger{selectedItem.itemName}");
-                //audioSource.PlayOneShot(chooseItemSound);
-
-                playerCardDisplay.text = $"玩家的卡牌点数：{playerSelectedCard.point}";
-                monsterCardDisplay.text = $"敌人的卡牌点数：{monsterSelectedCard.point}";
+                
             }
         });
 
+        monsterItemArea.ItemUIFlipBack(true);
+        yield return new WaitForSecondsRealtime(1.5f);
+        monsterItemArea.ClearReadyToUseItem();
+        //playerAnimator.SetTrigger($"Trigger{selectedItem.itemName}");
+        //audioSource.PlayOneShot(chooseItemSound);
+
+        monsterPointText.text = $"{monsterSurplusPoint - monsterSelectedCard.point}";
+        girlPointText.text = $"{girlSurplusPoint - girlSelectedCard.point}";
         // �ȴ����ȷ��
         yield return new WaitUntil(() => itemUsed);
         EnableButton(confirmBtn, false, null);
@@ -369,7 +426,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("敌人的道具回合");
 
-        List<GameItem> enemyItems = monster.GetItems();
+        List<GameItem> enemyItems = girl.GetItems();
         if (enemyItems.Count > 0)
         {
             GameItem selectedItem = null;
@@ -380,16 +437,31 @@ public class GameManager : MonoBehaviour
             if (selectedItem != null)
             {
                 Debug.Log($"敌人使用道具：{selectedItem.itemName}");
-                List<FearCard> cards = selectedItem.Use(monster, player, monsterSelectedCard, playerSelectedCard);
-                monsterSelectedCard = cards[0];
-                playerSelectedCard = cards[1];
-                monster.RemoveItem(selectedItem);
+                List<FearCard> cards = selectedItem.Use(girl, monster, girlSelectedCard, monsterSelectedCard);
+                girlSelectedCard = cards[0];
+                monsterSelectedCard = cards[1];
+                girl.RemoveItem(selectedItem);
 
-                //monsterAnimator.SetTrigger($"Trigger{selectedItem.itemName}");
+                if(girlItemUI == null)
+                {
+                    girlItemUI = Instantiate(itemPrefab).GetComponent<GameItemUI>();
+                }
+                girlItemUI.gameObject.SetActive(true);
+                girlItemUI.cardTun.mCardState = CardState.Back;
+                girlItemUI.SetUI(selectedItem, girlItemArea);
+                girlItemUI.transform.SetParent(girlItemArea, false);
+                girlItemUI.gameObject.transform.position = girlTransform.transform.position;
+                girlItemUI.transform.DOMove(girlItemArea.position, 1f).SetEase(Ease.InOutQuad);
+                yield return new WaitForSecondsRealtime(1.5f);
+                girlItemUI.FlipBack(true);
+                yield return new WaitForSecondsRealtime(1.5f);
+
+                girlItemUI.gameObject.SetActive(false);
+                //playerAnimator.SetTrigger($"Trigger{selectedItem.itemName}");
                 //audioSource.PlayOneShot(chooseItemSound);
 
-                playerCardDisplay.text = $"玩家的卡牌点数：{playerSelectedCard.point}";
-                monsterCardDisplay.text = $"敌人的卡牌点数：{monsterSelectedCard.point}";
+                monsterPointText.text = $"{monsterSurplusPoint}";
+                girlPointText.text = $"{girlSurplusPoint}";
             }
             else
             {
@@ -404,9 +476,10 @@ public class GameManager : MonoBehaviour
         }
 
         // ģ����˲������ӳ�
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSecondsRealtime(1f);
     }
 
+    #region AI道具决策
     private GameItem ChooseEnemyItem(List<GameItem> enemyItems)
     {
         // ������˵ĵ��߲���1�����Ӻ���������
@@ -441,13 +514,13 @@ public class GameManager : MonoBehaviour
         if (peekItem != null)
         {
             // ���ݶԷ����Ƶ�����ѡ����ʵĵ��߲���
-            int playerCardValue = playerSelectedCard.point; // �����л�ȡ��ҵ�ǰ���Ƶ����ĺ���
-            int monsterCardValue = monsterSelectedCard.point; // �����л�ȡ���˵�ǰ���Ƶ����ĺ���
+            int playerCardValue = monsterSelectedCard.point; // �����л�ȡ��ҵ�ǰ���Ƶ����ĺ���
+            int enemyCardValue = girlSelectedCard.point; // �����л�ȡ���˵�ǰ���Ƶ����ĺ���
 
-            if (playerCardValue > monsterCardValue)
+            if (playerCardValue > enemyCardValue)
             {
                 // ���ݲ��ѡ���Ƿ���׳����͵����ǿ��
-                return ChooseBoostOrSwap(playerCardValue, monsterCardValue);
+                return ChooseBoostOrSwap(playerCardValue, enemyCardValue);
             }
             else
             {
@@ -459,16 +532,16 @@ public class GameManager : MonoBehaviour
         return null;
     }
 
-    private GameItem ChooseBoostOrSwap(int playerCardValue, int monsterCardValue)
+    private GameItem ChooseBoostOrSwap(int playerCardValue, int enemyCardValue)
     {
         // ѡ��׳����͵������
-        if (Mathf.Abs(playerCardValue - monsterCardValue) <= 3)
+        if (Mathf.Abs(playerCardValue - enemyCardValue) <= 3)
         {
-            return monster.GetItems().Find(item => item.itemName == "壮胆"); // �ҵ�׳������
+            return girl.GetItems().Find(item => item.itemName == "壮胆"); // �ҵ�׳������
         }
         else
         {
-            return monster.GetItems().Find(item => item.itemName == "偷换"); // �ҵ�͵������
+            return girl.GetItems().Find(item => item.itemName == "偷换"); // �ҵ�͵������
         }
     }
 
@@ -476,7 +549,7 @@ public class GameManager : MonoBehaviour
     {
         // ���û�к��ʵĵ��ߣ���ѡ����������
         Debug.Log("敌人没有合适的道具, 选择道具(悔棋)");
-        return monster.GetItems().Find(item => item.itemName == "悔棋"); // �ҵ��������
+        return girl.GetItems().Find(item => item.itemName == "悔棋"); // �ҵ��������
     }
 
     private GameItem SelectOtherEnemyItems(List<GameItem> enemyItems)
@@ -485,33 +558,7 @@ public class GameManager : MonoBehaviour
         Debug.Log("敌人随机选择道具");
         return enemyItems[Random.Range(0, enemyItems.Count)];
     }
-
-    public GameItem MonsterEvaluateItem(Monster monster)
-    {
-        List<GameItem> items = monster.GetItems();
-        List<string> strings = new List<string>();
-        GameItem evaluateItem;
-        for (int i = 0; i < items.Count; i++)
-        {
-            strings.Add(items[i].itemName);
-        }
-
-        if (items.Contains(new PeekItem()))
-        {
-            evaluateItem = new PeekItem();
-
-        }
-        else if (items.Contains(new ForceChangeCardItem()))
-        {
-            evaluateItem = new ForceChangeCardItem();
-        }
-        else
-        {
-            evaluateItem = null;
-        }
-
-        return evaluateItem;
-    }
+    #endregion
 
     private void ItemPhaseConfirm()
     {
@@ -522,20 +569,20 @@ public class GameManager : MonoBehaviour
     private void ItemPhaseRun()
     {
         Debug.Log("玩家确认结束道具使用阶段");
-        if (cardTargetArea.GetAreaItem() != null)
+        if (monsterItemArea.GetAreaItem() != null)
         {
-            GameItem selectedItem = cardTargetArea.GetAreaItem();
+            GameItem selectedItem = monsterItemArea.GetAreaItem();
             Debug.Log($"玩家使用道具：{selectedItem.itemName}");
-            List<FearCard> cards = selectedItem.Use(player, monster, playerSelectedCard, monsterSelectedCard);
-            playerSelectedCard = cards[0];
-            monsterSelectedCard = cards[1];
-            player.RemoveItem(selectedItem);
+            List<FearCard> cards = selectedItem.Use(monster, girl, monsterSelectedCard, girlSelectedCard);
+            monsterSelectedCard = cards[0];
+            girlSelectedCard = cards[1];
+            monster.RemoveItem(selectedItem);
 
             //playerAnimator.SetTrigger($"Trigger{selectedItem.itemName}");
             //audioSource.PlayOneShot(chooseItemSound);
 
-            playerCardDisplay.text = $"玩家的卡牌点数：{playerSelectedCard.point}";
-            monsterCardDisplay.text = $"敌人的卡牌点数：{monsterSelectedCard.point}";
+            monsterPointText.text = $"{monsterSurplusPoint}";
+            girlPointText.text = $"{girlSurplusPoint}";
         }
 
         // ����ȷ�ϰ�ť
@@ -543,7 +590,7 @@ public class GameManager : MonoBehaviour
         EnableButton(finishBtn, false, null);
 
         // �������� UI
-        RefreshPlayerItemUI(player, null);
+        RefreshPlayerItemUI(monster);
 
         // ������һ�׶�
         currentPhase = GamePhase.Resolve;
@@ -555,15 +602,15 @@ public class GameManager : MonoBehaviour
         Debug.Log($"玩家点击使用道具：{item.itemName}");
 
         // ִ�е���Ч��
-        List<FearCard> cards = item.Use(player, monster, playerSelectedCard, monsterSelectedCard);
-        playerSelectedCard = cards[0];
-        monsterSelectedCard = cards[1];
+        List<FearCard> cards = item.Use(girl, monster, monsterSelectedCard, girlSelectedCard);
+        monsterSelectedCard = cards[0];
+        girlSelectedCard = cards[1];
 
         // �Ƴ���ҵ���
-        player.RemoveItem(item);
+        girl.RemoveItem(item);
 
         // ���� UI
-        RefreshPlayerItemUI(player);
+        RefreshPlayerItemUI(girl);
     }
     #endregion
 
@@ -571,70 +618,88 @@ public class GameManager : MonoBehaviour
     private void ResolvePhase()
     {
         Debug.Log("结算阶段开始");
-        Debug.Log($"玩家选择的卡为({playerSelectedCard.cardName})，点数为({playerSelectedCard.point})");
+        Debug.Log($"玩家选择的卡为({monsterSelectedCard.cardName})，点数为({monsterSelectedCard.point})");
 
-        int playerPoint = playerSelectedCard.point;
-        int monsterPoint = monsterSelectedCard.point;
+        int playerPoint = monsterSelectedCard.point;
+        int enemyPoint = girlSelectedCard.point;
 
-        if (playerPoint > monsterPoint)
+        StartCoroutine(PlayResolveAnimation(playerPoint, enemyPoint));
+
+        //playerValueTMP.text = $"玩家的恐惧值：{monster.GetFearValue()}";
+        //monsterValueTMP.text = $"敌人的恐惧值：{girl.GetFearValue()}";
+
+
+        monster.UseCard(monsterSelectedCard);
+        girl.UseCard(girlSelectedCard);
+
+
+
+        RefreshPlayerCardUI(monster);
+
+        
+    }
+
+    private IEnumerator PlayResolveAnimation(int playerPoint, int enemyPoint)
+    {
+
+        monsterCardArea.CardUIFlipBack(false);
+        girlCardUI.FlipBack(false);
+        yield return new WaitForSecondsRealtime(1f);
+
+        if (playerPoint > enemyPoint)
         {
-            monster.IncreaseFearValue(1);
-            playerAnimator.SetTrigger($"Trigger{playerSelectedCard.cardName}");
-            monsterAnimator.SetTrigger($"TriggerHurt");
+            girl.IncreaseFearValue(1);
+            monsterAnimator.SetTrigger($"Trigger{monsterSelectedCard.cardName}");
+            yield return new WaitForSecondsRealtime(0.5f);
+            girlAnimator.SetTrigger($"TriggerHurt");
 
             // 播放比较点数音效
             audioSource.PlayOneShot(comparePointsSound);
-            Debug.Log($"玩家获胜，敌人增加一点恐惧值 ({monster.GetFearValue()})");
+            Debug.Log($"玩家获胜，敌人增加一点恐惧值 ({girl.GetFearValue()})");
         }
-        else if (playerPoint < monsterPoint)
+        else if (playerPoint < enemyPoint)
         {
-            player.IncreaseFearValue(1);
-            monsterAnimator.SetTrigger($"Trigger{monsterSelectedCard.cardName}");
-            playerAnimator.SetTrigger($"TriggerHurt");
-            Debug.Log($"敌人获胜，玩家增加一点恐惧值 ({player.GetFearValue()})");
+            monster.IncreaseFearValue(1);
+            girlAnimator.SetTrigger($"Trigger{girlSelectedCard.cardName}");
+            yield return new WaitForSecondsRealtime(0.5f);
+            monsterAnimator.SetTrigger($"TriggerHurt");
+            Debug.Log($"敌人获胜，玩家增加一点恐惧值 ({monster.GetFearValue()})");
         }
         else
         {
-            player.IncreaseFearValue(1);
             monster.IncreaseFearValue(1);
+            girl.IncreaseFearValue(1);
 
-            playerAnimator.SetTrigger($"Trigger{playerSelectedCard.cardName}");
             monsterAnimator.SetTrigger($"Trigger{monsterSelectedCard.cardName}");
-            playerAnimator.SetTrigger($"TriggerHurt");
+            girlAnimator.SetTrigger($"Trigger{girlSelectedCard.cardName}");
+            yield return new WaitForSecondsRealtime(0.5f);
             monsterAnimator.SetTrigger($"TriggerHurt");
-            Debug.Log($"平局，双方都增加1恐惧值({player.GetFearValue()}):({monster.GetFearValue()})");
+            girlAnimator.SetTrigger($"TriggerHurt");
+            Debug.Log($"平局，双方都增加1恐惧值({monster.GetFearValue()}):({girl.GetFearValue()})");
         }
+        yield return new WaitForSecondsRealtime(0.5f);
 
-        playerValueTMP.text = $"玩家的恐惧值：{player.GetFearValue()}";
-        monsterValueTMP.text = $"敌人的恐惧值：{monster.GetFearValue()}";
-
-        player.UseCard(playerSelectedCard);
-        monster.UseCard(monsterSelectedCard);
-
-        cardTargetArea.ClearReadyToUseCard();
-
-        RefreshPlayerCardUI(player);
-
+        monsterCardArea.ClearReadyToUseCard();
+        for (int i = 1; i < girlCardArea.childCount; i++)
+        {
+            Destroy(girlCardArea.GetChild(i).gameObject);
+        }
         // ������һ�׶�
         currentPhase = GamePhase.End;
         RunPhase();
-
-        //��ȡ˫������
-        //�ȵ㣬С��һ�����ӿ־�ֵ
-        //��һ�׶�
     }
 
     private void EndPhase()
     {
         Debug.Log("回合结束阶段");
-        tugUI.UpdateBars(4 + monster.GetFearValue(), 4 + player.GetFearValue());
+        tugUI.UpdateBars(4 + monster.GetFearValue(), 4 + girl.GetFearValue());
         // �ж��Ƿ���һ���־�ֵ�ﵽ3
-        if (player.GetFearValue() >= 3)
+        if (monster.GetFearValue() >= 3)
         {
             Debug.Log("玩家失败！");
             // 失败逻辑
         }
-        else if (monster.GetFearValue() >= 3)
+        else if (girl.GetFearValue() >= 3)
         {
             Debug.Log("敌人失败！");
             // 胜利逻辑
@@ -655,11 +720,7 @@ public class GameManager : MonoBehaviour
 
         while (points.Count < cardCount)
         {
-            // ʹ��һ���򵥵ļ�Ȩ�߼������м���ʸ��ߵ������
-            float randomValue = Random.Range(0f, 1f); // ����һ��[0, 1]�ĸ�����
-
-            // (��ʼֵa����ֵֹb����ֵ����t) ����a = 0, b = 1, t = 0, �򷵻�ֵΪ0
-            int point = Mathf.RoundToInt(Mathf.Lerp(minPoint, maxPoint, randomValue * randomValue)); // ƽ��Ȩ��ʹ�м����
+            int point = Random.Range(0, 10);
 
             if (point > 0 && point <= maxPoint && totalPoints - point >= minPoint * (cardCount - points.Count - 1))
             {
@@ -679,24 +740,55 @@ public class GameManager : MonoBehaviour
     }
 
 
-    public void InitDecks(Player player, Player monster,int startPoint, int endPoint)
+    public void InitDecks(Player player, Player enemy,int startPoint, int endPoint)
     {
+        // 生成梦兽卡牌
         List<int> points = RandomCardPoints(25, 5, startPoint, endPoint);
         for (int i = 0; i < points.Count; i++)
         {
-            string cardName = $"FireCard";
-            playDecks.Add(new FearCard(cardName, points[i]));
+            FearCard newCard = GenerateCardData(monsterDecksSO, points[i]);
+            monsterDecks.Add(newCard);
         }
-        player.ResetFearValue();
 
+        // 生成小女孩卡牌
         points = RandomCardPoints(25, 5, startPoint, endPoint);
         for (int i = 0; i < points.Count; i++)
         {
-            string cardName = $"GhostCard";
-            monsterDecks.Add(new FearCard(cardName, points[i]));
-            Debug.Log($"敌人卡{i}的点数：{points[i]}");
+            FearCard newCard = GenerateCardData(girlDecksSO, points[i]);
+            girlDecks.Add(newCard);
         }
-        monster.ResetFearValue();
+
+        player.ResetFearValue();
+        enemy.ResetFearValue();
+    }
+
+    // 根据卡牌点数自动匹配背景、图案、数值
+    private FearCard GenerateCardData(List<FearCardSO> decksSO, int fearValue)
+    {
+        // 查找对应卡牌的配置信息
+        FearCardSO cardData = GetCardDataByFearValue(decksSO, fearValue);
+
+        if (cardData == null)
+        {
+            Debug.LogError($"未找到对应 {fearValue} 吓人值的卡牌配置信息！");
+            return null;
+        }
+
+        // 返回生成的卡牌数据
+        return new FearCard(cardData.cardName, cardData.background, cardData.artSprite, cardData.back, fearValue, cardData.description);
+    }
+
+    // 根据卡牌的吓人值从配置文件中获取数据
+    private FearCardSO GetCardDataByFearValue(List<FearCardSO> decksSO, int fearValue)
+    {
+        foreach (var cardData in decksSO)
+        {
+            if (cardData.minpoint <= fearValue && fearValue <= cardData.maxpoint)
+            {
+                return cardData;
+            }
+        }
+        return null;  // 如果没有找到对应的卡牌，返回null
     }
 
     public void RefreshPlayerCardUI(Player player)
@@ -780,36 +872,7 @@ public class GameManager : MonoBehaviour
 
             // ���õ���UI����
             itemUI.gameObject.transform.localPosition = Vector3.zero;
-            itemUI.SetUI(item, itemSlots[i], HandleItemClicked);
-
-        }
-    }
-
-    public void RefreshPlayerItemUI(Player player, System.Action<GameItem> callback)
-    {
-        HidePlayerCardUI();
-
-        List<GameItem> items = player.GetItems();
-        if (items.Count == 0)
-        {
-            return;
-        }
-
-        for (int i = 0; i < items.Count; ++i)
-        {
-            GameItem item = items[i];
-
-            // ��ȡ��ǰ�����е� GameIteUI�����û�У�ʵ����һ����
-            GameItemUI itemUI = itemSlots[i].GetComponentInChildren<GameItemUI>();
-            if (itemUI == null)
-            {
-                Debug.Log($"实例化第 {i} 张牌的 UI：{item.itemName}");
-                itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
-            }
-
-            // ���õ���UI����
-            itemUI.gameObject.transform.localPosition = Vector3.zero;
-            itemUI.SetUI(item, itemSlots[i], callback);
+            itemUI.SetUI(item, itemSlots[i]);
 
         }
     }
@@ -827,13 +890,13 @@ public class GameManager : MonoBehaviour
 
     }
 
-    public void InitGameItems(Player player, Player monster)
+    public void InitGameItems(Player player, Player enemy)
     {
-        itemPool.Add(new PeekItem());
-        itemPool.Add(new ChangeCardItem());
-        itemPool.Add(new TauntItem());
-        itemPool.Add(new EncourageItem());
-        itemPool.Add(new SwapCardPointsItem());
+        itemPool.Add(new PeekItem(itemSprites[0], itemSprites[6]));
+        itemPool.Add(new ChangeCardItem(itemSprites[1], itemSprites[6]));
+        itemPool.Add(new TauntItem(itemSprites[2], itemSprites[6]));
+        itemPool.Add(new EncourageItem(itemSprites[3], itemSprites[6]));
+        itemPool.Add(new SwapCardPointsItem(itemSprites[4], itemSprites[6]));
 
         for (int i = 0; i < 5; i++)
         {
@@ -841,7 +904,7 @@ public class GameManager : MonoBehaviour
         }
         for (int i = 0; i < 5; i++)
         {
-            monster.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
+            enemy.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
         }
     }
 

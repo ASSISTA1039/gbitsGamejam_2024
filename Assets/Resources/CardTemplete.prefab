@@ -646,6 +646,7 @@ MonoBehaviour:
   titleTMP: {fileID: 0}
   pointTMP: {fileID: 0}
   descriptionTMP: {fileID: 0}
+  background: {fileID: 0}
   artSprite: {fileID: 0}
   cardTun: {fileID: 0}
 --- !u!114 &1687183609417996626
@@ -802,7 +803,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1127926453, guid: 0c85ccded06e02945bc9d5599520d244, type: 3}
+  m_Sprite: {fileID: 1449795534, guid: c8ce1b2bad1fb490c9cb91274dfddae4, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

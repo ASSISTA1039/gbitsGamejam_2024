@@ -8,53 +8,51 @@ using System;
 
 public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Transform originalParent; // ¼ÇÂ¼¿¨ÅÆÔ­Ê¼¸¸ÎïÌå
-    public Transform areaParent; // ¼ÇÂ¼¿¨ÅÆÔ­Ê¼¸¸ÎïÌå
-    //public Canvas parentCanvas; // ¸¸ÎïÌåµÄCanvas£¬ÓÃÓÚ´¦ÀíÍÏ¶¯
-    private bool isSnappingToTarget = false; // ÊÇ·ñÕýÔÚÎü¸½µ½Ä¿±êÇøÓò
+    public Transform originalParent; // ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public Transform areaParent; // ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    //public Canvas parentCanvas; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Canvasï¿½ï¿½ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½
+    private bool isSnappingToTarget = false; // ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public Vector3 targetPosition;
 
     public GameItem item;
 
-    public Sprite artSprite;
-    public Action<GameItem> onClickedAction;
-
-
-    public TextMeshProUGUI nameTMP;
+    public Image art;
+    public Image back;
+    public CardTun cardTun;
 
     private void Awake()
     {
-        artSprite = transform.Find("Image").GetComponent<Image>().sprite;
+        art = transform.Find("Front/Image").GetComponent<Image>();
+        back = transform.Find("Back").GetComponent<Image>();
 
-        nameTMP = transform.Find("Name").GetComponent<TextMeshProUGUI>();
+        cardTun = gameObject.GetComponent<CardTun>();
     }
 
-    public void SetUI(GameItem item, Transform originTransform, Action<GameItem> callback)
+    public void SetUI(GameItem item, Transform originTransform)
     {
         this.item = item;
-        this.artSprite = item.sprite;
-        this.onClickedAction = callback;
+        this.art.sprite = item.art;
+        this.back.sprite = item.back;
 
         originalParent = originTransform;
 
-        nameTMP.text = item.itemName;
     }
 
     //public void OnPointerDown(PointerEventData eventData)
     //{
-    //    Debug.Log($"µã»÷µÀ¾ß£º{item.itemName}");
+    //    Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½{item.itemName}");
     //    onClickedAction?.Invoke(item);
     //}
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //originalPosition = transform.position; // ¼ÇÂ¼¿ªÊ¼ÍÏ¶¯Ê±µÄÎ»ÖÃ
-        //originalParent = transform.parent; // ¼ÇÂ¼Ô­Ê¼¸¸ÎïÌå
-        //transform.SetParent(parentCanvas.transform); // Ê¹¿¨ÅÆÔÚCanvasÏÂ£¬ÒÔ±ãÍÏ¶¯
+        //originalPosition = transform.position; // ï¿½ï¿½Â¼ï¿½ï¿½Ê¼ï¿½Ï¶ï¿½Ê±ï¿½ï¿½Î»ï¿½ï¿½
+        //originalParent = transform.parent; // ï¿½ï¿½Â¼Ô­Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        //transform.SetParent(parentCanvas.transform); // Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Canvasï¿½Â£ï¿½ï¿½Ô±ï¿½ï¿½Ï¶ï¿½
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition; // ¸úËæÊó±êÒÆ¶¯
+        transform.position = Input.mousePosition; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -63,8 +61,8 @@ public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         {
             transform.SetParent(areaParent);
             transform.position = areaParent.position;
-            CardTargetArea area = areaParent.gameObject.GetComponent<CardTargetArea>();
-            //µ±È·ÈÏÇøÓòÃ»ÓÐ·ÅÖÃ¿¨ÅÆÊ±²ÅÄÜÍÏÈë¿¨ÅÆ£¬Ò»»ØºÏÖ»ÄÜÊ¹ÓÃÒ»ÕÅ¿¨
+            ItemTargetArea area = areaParent.gameObject.GetComponent<ItemTargetArea>();
+            //ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð·ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë¿¨ï¿½Æ£ï¿½Ò»ï¿½Øºï¿½Ö»ï¿½ï¿½Ê¹ï¿½ï¿½Ò»ï¿½Å¿ï¿½
             area.GetReadyToUseItem(this);
         }
         else
@@ -75,20 +73,34 @@ public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void ReturnToHand()
     {
-        transform.SetParent(originalParent); // »Ö¸´¸¸ÎïÌå
+        transform.SetParent(originalParent); // ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         transform.position = originalParent.position;
     }
 
     public void SnapToTarget(Transform areaTransform)
     {
-        // Îü¸½µ½Ä¿±êÇøÓò
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         areaParent = areaTransform;
         isSnappingToTarget = true;
     }
 
     public void ResetPosition()
     {
-        // ÖØÖÃ¿¨ÅÆÎ»ÖÃ
+        // ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Î»ï¿½ï¿½
         isSnappingToTarget = false;
+    }
+
+    public void FlipBack(bool istoback)
+    {
+        if (istoback)
+        {
+            cardTun.mCardState = CardState.Back;
+            cardTun.StartBack();
+        }
+        else
+        {
+            cardTun.mCardState = CardState.Front;
+            cardTun.StartFront();
+        }
     }
 }

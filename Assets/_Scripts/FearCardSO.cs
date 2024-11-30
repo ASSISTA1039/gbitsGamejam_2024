@@ -7,16 +7,19 @@ using UnityEngine.UI;
 public class FearCardSO : ScriptableObject
 {
     public string cardName;
-    public Sprite sprite;
-    public int point;
+    public Sprite background;
+    public Sprite artSprite;
+    public Sprite back;
+    public int minpoint;
+    public int maxpoint;
 
     public string description;
 
-    public FearCardSO(string name, Sprite img, int point, string description)
+    public FearCardSO(string name, Sprite background, Sprite img, string description)
     {
         this.cardName = name;
-        this.sprite = img;
-        this.point = point;
+        this.background = background;
+        this.artSprite = img;
         this.description = description;
     }
 }

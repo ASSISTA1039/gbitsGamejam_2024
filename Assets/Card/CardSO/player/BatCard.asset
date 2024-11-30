@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb08bd4f49df47c4fad4b10e275d992e, type: 3}
+  m_Name: BatCard
+  m_EditorClassIdentifier: 
+  cardName: BatCard
+  background: {fileID: 21300000, guid: 21eb76ca8c0d44469b4d73a6a1fff9a5, type: 2}
+  artSprite: {fileID: 21300000, guid: 3689ed76e2dab4ab5a25bc7c2194d0a5, type: 2}
+  back: {fileID: 21300000, guid: 978126c81bb4244de95fca3019d07ab3, type: 2}
+  minpoint: 1
+  maxpoint: 2
+  description: Description 1

@@ -5,16 +5,11 @@ using UnityEngine;
 public class CardTargetArea : MonoBehaviour
 {
     private FearCardUI readyToUseCardUI = null;
-    private GameItemUI readyToUseItemUI = null;
 
     public FearCard GetAreaCard()
     {
         return readyToUseCardUI != null ? readyToUseCardUI.card : null;
     }    
-    public GameItem GetAreaItem()
-    {
-        return readyToUseItemUI != null ? readyToUseItemUI.item : null;
-    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -25,16 +20,6 @@ public class CardTargetArea : MonoBehaviour
             {
                 // �������Ƶ�Ŀ������
                 cardUI.SnapToTarget(transform);
-            }
-        }
-
-        if (other.CompareTag("Item")) // �������Ŀ��������ǿ���
-        {
-            GameItemUI itemUI = other.GetComponent<GameItemUI>();
-            if (itemUI != null)
-            {
-                // �������ߵ�Ŀ������
-                itemUI.SnapToTarget(transform);
             }
         }
     }
@@ -51,17 +36,6 @@ public class CardTargetArea : MonoBehaviour
                 readyToUseCardUI = null;
             }
         }
-
-        if (other.CompareTag("Item")) // ��������뿪Ŀ������
-        {
-            GameItemUI itemUI = other.GetComponent<GameItemUI>();
-            if (itemUI != null && itemUI == readyToUseItemUI )
-            {
-                // �ָ�����ԭλ
-                itemUI.ResetPosition();
-                readyToUseItemUI = null;
-            }
-        }
     }
 
     public void GetReadyToUseCard(FearCardUI cardUI)
@@ -73,21 +47,23 @@ public class CardTargetArea : MonoBehaviour
         readyToUseCardUI = cardUI;
     }
 
-    public void GetReadyToUseItem(GameItemUI itemUI)
-    {
-        if (readyToUseItemUI != null)
-        {
-            readyToUseItemUI.ReturnToHand();
-        }
-        readyToUseItemUI = itemUI;
-    }
 
     public void ClearReadyToUseCard()
     {
-        for (int i = 0; i < transform.childCount; i++)
+        for (int i = 1; i < transform.childCount; i++)
         {
             Destroy(transform.GetChild(i).gameObject);
         }
         readyToUseCardUI = null;
     }
+
+    public void CardUIFlipBack(bool istoback)
+    {
+        if (readyToUseCardUI == null)
+        {
+            return;
+        }
+        readyToUseCardUI.FlipBack(istoback);
+    }
+
 }

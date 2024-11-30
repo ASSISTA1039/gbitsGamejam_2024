@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class TugOfWarUI : MonoBehaviour
 {
-    public RectTransform redBar;   // ºìÉ«²¿·Ö
-    public RectTransform blueBar;  // À¶É«²¿·Ö
-    public float totalWidth = 1920; // ×Ü¿í¶È
+    public RectTransform girlBar;   // 
+    public RectTransform monsterBar;  // ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½
+    public float totalWidth = 1920; // ï¿½Ü¿ï¿½ï¿½ï¿½
 
     public float aScore = 4f;
     public float bScore = 4f;
@@ -21,10 +21,18 @@ public class TugOfWarUI : MonoBehaviour
         aScore = playerScore;
         bScore = monsterScore;
 
-        float redWidth = (aScore / totalScore) * totalWidth;
-        float blueWidth = (bScore / totalScore) * totalWidth;
+        float girlWidth = (aScore / totalScore) * totalWidth;
+        float monsterWidth = (bScore / totalScore) * totalWidth;
+        if(girlWidth < monsterWidth)
+        {
+            girlBar.transform.SetAsFirstSibling();
+        }
+        else
+        {
+            monsterBar.transform.SetAsFirstSibling();
+        }
 
-        StartCoroutine(SmoothUpdate(redWidth, blueWidth));
+        StartCoroutine(SmoothUpdate(girlWidth, monsterWidth));
     }
 
     //public float GetAScore() => aScore;
@@ -32,23 +40,23 @@ public class TugOfWarUI : MonoBehaviour
 
     IEnumerator SmoothUpdate(float targetAWidth, float targetBWidth)
     {
-        float duration = 0.5f; // ¶¯»­³ÖÐøÊ±¼ä
+        float duration = 2f; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
         float elapsed = 0f;
 
-        Vector2 initialRedSize = redBar.sizeDelta;
-        Vector2 initialBlueSize = blueBar.sizeDelta;
+        Vector2 initialRedSize = girlBar.sizeDelta;
+        Vector2 initialBlueSize = monsterBar.sizeDelta;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.Clamp01(elapsed / duration);  // ·ÀÖ¹Öµ³¬¹ý1
+            float t = Mathf.Clamp01(elapsed / duration);  // ï¿½ï¿½Ö¹Öµï¿½ï¿½ï¿½ï¿½1
 
-            redBar.sizeDelta = Vector2.Lerp(initialRedSize, new Vector2(targetAWidth, redBar.sizeDelta.y), t);
-            blueBar.sizeDelta = Vector2.Lerp(initialBlueSize, new Vector2(targetBWidth, blueBar.sizeDelta.y), t);
+            girlBar.sizeDelta = Vector2.Lerp(initialRedSize, new Vector2(targetAWidth, girlBar.sizeDelta.y), t);
+            monsterBar.sizeDelta = Vector2.Lerp(initialBlueSize, new Vector2(targetBWidth, monsterBar.sizeDelta.y), t);
 
             yield return null;
         }
-        redBar.sizeDelta = new Vector2(targetAWidth, redBar.sizeDelta.y);
-        blueBar.sizeDelta = new Vector2(targetBWidth, blueBar.sizeDelta.y);
+        girlBar.sizeDelta = new Vector2(targetAWidth, girlBar.sizeDelta.y);
+        monsterBar.sizeDelta = new Vector2(targetBWidth, monsterBar.sizeDelta.y);
     }
 }

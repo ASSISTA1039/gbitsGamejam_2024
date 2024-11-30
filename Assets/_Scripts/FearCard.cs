@@ -2,11 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class FearCard 
 {
     public string cardName;
-    public Sprite sprite;
+    public Sprite background;
+    public Sprite artSprite;
+    public Sprite back;
     public int point;
 
     public string description;
@@ -19,11 +22,13 @@ public class FearCard
     //    this.isUsed = false;
     //}
 
-    public FearCard(string name, Sprite img, int point, string description)
+    public FearCard(string name, Sprite background, Sprite art, Sprite back, int point, string description)
     {
         this.cardName = name;
-        this.sprite = img;
+        this.background = background;
+        this.artSprite = art;
         this.point = point;
+        this.back = back;
         this.description = description;
     }
 

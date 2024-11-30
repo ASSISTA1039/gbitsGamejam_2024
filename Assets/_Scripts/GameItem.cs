@@ -4,23 +4,28 @@ using UnityEngine;
 
 public abstract class GameItem
 {
-    public string itemName; // µÀ¾ßÃû³Æ
-    public Sprite sprite;
-    public abstract List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard); // µÀ¾ßÊ¹ÓÃÂß¼­
-    //public abstract List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard); // µÀ¾ßÊ¹ÓÃÂß¼­
-    //public abstract List<FearCard> Use(Player player,  FearCard playerCard, FearCard monsterCard); // µÀ¾ßÊ¹ÓÃÂß¼­
+    public string itemName; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public Sprite art;
+    public Sprite back;
+    public abstract List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard); // ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ß¼ï¿½
+    //public abstract List<FearCard> Use(Player player, Monster monster, FearCard playerCard, FearCard monsterCard); // ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ß¼ï¿½
+    //public abstract List<FearCard> Use(Player player,  FearCard playerCard, FearCard monsterCard); // ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ß¼ï¿½
 }
 
 public class PeekItem : GameItem
 {
-    public PeekItem() { itemName = "¿úÊÓ"; }
+    public PeekItem(Sprite sprite, Sprite back) {
+        itemName = "çª¥è§†";
+        this.art = sprite;
+        this.back = back;
+    }
 
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
-        Debug.Log("Ê¹ÓÃ¿úÊÓµÀ¾ß£¬µĞÈË¿¨ÅÆĞÅÏ¢ÈçÏÂ£º");
+        Debug.Log("ä½¿ç”¨çª¥è§†é“å…·ï¼Œæ•Œäººå¡ç‰Œä¿¡æ¯å¦‚ä¸‹ï¼š");
         foreach (var card in monster.GetCards())
         {
-            Debug.Log($"µĞÈË¿¨ÅÆ£º{card.cardName}, ÏÅÈËÖµ£º{card.point}");
+            Debug.Log($"çª¥è§†æˆåŠŸï¼æ•Œäººé€‰æ‹©çš„å¡ç‰Œæ˜¯ï¼š{card.cardName}, å“äººå€¼ï¼š{card.point}");
         }
 
         List<FearCard> res = new List<FearCard>
@@ -35,15 +40,18 @@ public class PeekItem : GameItem
 
 public class ChangeCardItem : GameItem
 {
-    public ChangeCardItem() { itemName = "»»¿¨"; }
+    public ChangeCardItem(Sprite sprite, Sprite back) {
+        itemName = "é¬¼è„¸";
+        this.art = sprite;
+    }
 
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         List<FearCard> playerDeck = player.GetCards();
-        //player.AddCard(playerCard); // °Ñµ±Ç°¿¨ÅÆ·Å»Ø¿¨×é
-        playerCard = playerDeck[Random.Range(0, playerDeck.Count)]; // ´ÓËùÓĞÊÖÅÆÖĞËæ»ú»»ĞÂ¿¨
+        //player.AddCard(playerCard); // ï¿½Ñµï¿½Ç°ï¿½ï¿½ï¿½Æ·Å»Ø¿ï¿½ï¿½ï¿½
+        playerCard = playerDeck[Random.Range(0, playerDeck.Count)]; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½
         //player.UseCard(playerCard); 
-        Debug.Log($"Ê¹ÓÃ»»¿¨µÀ¾ß£¬Íæ¼Ò»»³ÉÁËĞÂ¿¨£º{playerCard.cardName}, ÏÅÈËÖµ£º{playerCard.point}");
+        Debug.Log($"Ê¹ç©å®¶æ¢æˆäº†æ–°å¡{playerCard.cardName}, æ–°å¡ç‚¹æ•°ï¼š{playerCard.point}");
 
         List<FearCard> res = new List<FearCard>
         {
@@ -57,11 +65,15 @@ public class ChangeCardItem : GameItem
 
 public class TauntItem : GameItem
 {
-    public TauntItem() { itemName = "¼¥·í"; }
+    public TauntItem(Sprite sprite, Sprite back) {
+        itemName = "è®¥è®½";
+        this.art = sprite;
+        this.back = back;
+    }
 
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
-        Debug.Log($"Ê¹ÓÃ¼¥·íµÀ¾ß£¬µĞÈË¿¨ÅÆ£º{monsterCard.cardName} ÏÅÈËÖµ -3");
+        Debug.Log($"ä½¿ç”¨è®¥è®½é“å…·ï¼Œæ•Œäººå¡ç‰Œï¼š{monsterCard.cardName} å“äººå€¼ -3");
         monsterCard.point = Mathf.Max(1, monsterCard.point - 3);
 
         List<FearCard> res = new List<FearCard>
@@ -76,11 +88,15 @@ public class TauntItem : GameItem
 
 public class EncourageItem : GameItem
 {
-    public EncourageItem() { itemName = "×³µ¨"; }
+    public EncourageItem(Sprite sprite, Sprite back) {
+        itemName = "å£®èƒ†";
+        this.art = sprite;
+        this.back = back;
+    }
 
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
-        Debug.Log($"Ê¹ÓÃ×³µ¨µÀ¾ß£¬Íæ¼Ò¿¨ÅÆ£º{playerCard.cardName} ÏÅÈËÖµ +3");
+        Debug.Log($"ä½¿ç”¨å£®èƒ†é“å…·ï¼Œç©å®¶å¡ç‰Œï¼š{playerCard.cardName} å“äººå€¼ +3");
         playerCard.point = Mathf.Min(9, playerCard.point + 3);
 
         List<FearCard> res = new List<FearCard>
@@ -95,14 +111,18 @@ public class EncourageItem : GameItem
 
 public class SwapCardPointsItem : GameItem
 {
-    public SwapCardPointsItem() { itemName = "½»»»ÏÅÈËµãÊı"; }
+    public SwapCardPointsItem(Sprite sprite, Sprite back) {
+        itemName = "äº¤æ¢å“äººç‚¹æ•°";
+        this.art = sprite;
+        this.back = back;
+    }
 
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         int temp = playerCard.point;
         playerCard.point = monsterCard.point;
         monsterCard.point = temp;
-        Debug.Log($"Ê¹ÓÃ½»»»ÏÅÈËµãÊıµÀ¾ß£¬Íæ¼Ò¿¨ÅÆ±äÎª£º{playerCard.point}£¬µĞÈË¿¨ÅÆ±äÎª£º{monsterCard.point}");
+        Debug.Log($"ä½¿ç”¨äº¤æ¢å“äººç‚¹æ•°é“å…·ï¼Œç©å®¶å¡ç‰Œå˜ä¸ºï¼š{playerCard.point}ï¼Œæ•Œäººå¡ç‰Œå˜ä¸ºï¼š{monsterCard.point}");
 
         List<FearCard> res = new List<FearCard>
         {
@@ -116,14 +136,18 @@ public class SwapCardPointsItem : GameItem
 
 public class ForceChangeCardItem : GameItem
 {
-    public ForceChangeCardItem() { itemName = "Ç¿ÆÈ»»¿¨"; }
+    public ForceChangeCardItem(Sprite sprite, Sprite back) {
+        itemName = "å¼ºè¿«æ¢å¡";
+        this.art = sprite;
+        this.back = back;
+    }
 
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard)
     {
         List<FearCard> monsterDeck = monster.GetCards();
-        monsterDeck.Add(monsterCard); // °Ñµ±Ç°¿¨ÅÆ·Å»Ø¿¨×é
-        monsterCard = monsterDeck[Random.Range(0, monsterDeck.Count)]; // µĞÈË»»ĞÂ¿¨
-        Debug.Log($"Ê¹ÓÃÇ¿ÆÈ»»¿¨µÀ¾ß£¬µĞÈË»»³ÉÁËĞÂ¿¨£º{monsterCard.cardName}, ÏÅÈËÖµ£º{monsterCard.point}");
+        monsterDeck.Add(monsterCard); // ï¿½Ñµï¿½Ç°ï¿½ï¿½ï¿½Æ·Å»Ø¿ï¿½ï¿½ï¿½
+        monsterCard = monsterDeck[Random.Range(0, monsterDeck.Count)]; // ï¿½ï¿½ï¿½Ë»ï¿½ï¿½Â¿ï¿½
+        Debug.Log($"ä½¿ç”¨å¼ºè¿«æ¢å¡é“å…·ï¼Œæ•Œäººæ¢æˆäº†æ–°å¡ï¼š{monsterCard.cardName}, å“äººå€¼ï¼š{monsterCard.point}");
 
         List<FearCard> res = new List<FearCard>
         {

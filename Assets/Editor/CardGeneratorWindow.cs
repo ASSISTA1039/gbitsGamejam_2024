@@ -1,14 +1,17 @@
-using UnityEditor;
+ï»¿using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CardGeneratorWindow : EditorWindow
 {
-    private string folderPath = "Assets/Card/CardSO"; // ±£´æÂ·¾¶
-    private string spriteFolderPath = "Assets/Card/CardSprites"; // Sprite×ÊÔ´Â·¾¶
-    private int cardCount = 5; // ¿¨ÅÆÊıÁ¿
-    private string baseName = "¿¨"; // »ù´¡Ãû³Æ
-    private int startValue = 1; // ³õÊ¼¿Ö¾åÖµ
-    private Sprite[] spriteArray;
+    private string folderPath = "Assets/Card/CardSO"; // ç›®æ ‡æ–‡ä»¶å¤¹
+    private string spriteFolderPath = "Assets/Card/CardSprites"; // Spriteèµ„æºæ–‡ä»¶å¤¹
+    private int cardCount = 5; // å¡ç‰Œæ•°é‡
+    private string baseName = "Card"; // å¡ç‰ŒåŸºç¡€åç§°
+    private int startValue = 1; // èµ·å§‹ç‚¹æ•°
+    private Sprite[] spriteArray; // å¡ç‰ŒèƒŒæ™¯å’Œè‰ºæœ¯å›¾åƒ
+
+    private string[] descriptions = { "Description 1", "Description 2", "Description 3", "Description 4", "Description 5" }; // å¡ç‰Œæè¿°
 
     [MenuItem("Tools/Card Generator Window")]
     public static void ShowWindow()
@@ -18,36 +21,40 @@ public class CardGeneratorWindow : EditorWindow
 
     void OnGUI()
     {
-        GUILayout.Label("¿¨ÅÆÉú³ÉÆ÷", EditorStyles.boldLabel);
+        GUILayout.Label("Card Generator", EditorStyles.boldLabel);
 
-        // ÊäÈë±£´æÂ·¾¶
-        folderPath = EditorGUILayout.TextField("±£´æÂ·¾¶", folderPath);
+        // ç›®æ ‡æ–‡ä»¶å¤¹è·¯å¾„
+        folderPath = EditorGUILayout.TextField("ç›®æ ‡æ–‡ä»¶å¤¹", folderPath);
 
-        // ÊäÈëSpriteÎÄ¼ş¼ĞÂ·¾¶
-        spriteFolderPath = EditorGUILayout.TextField("Sprite×ÊÔ´Â·¾¶", spriteFolderPath);
+        // Spriteèµ„æºæ–‡ä»¶å¤¹è·¯å¾„
+        spriteFolderPath = EditorGUILayout.TextField("Spriteèµ„æºæ–‡ä»¶å¤¹", spriteFolderPath);
 
-        // ÊäÈë¿¨ÅÆÊıÁ¿
-        cardCount = EditorGUILayout.IntField("¿¨ÅÆÊıÁ¿", cardCount);
+        // å¡ç‰Œæ•°é‡
+        cardCount = EditorGUILayout.IntField("å¡ç‰Œæ•°é‡", cardCount);
 
-        // ÊäÈë»ù´¡Ãû³Æ
-        baseName = EditorGUILayout.TextField("¿¨ÅÆ»ù´¡Ãû³Æ", baseName);
+        // å¡ç‰ŒåŸºç¡€åç§°
+        baseName = EditorGUILayout.TextField("å¡ç‰ŒåŸºç¡€åç§°", baseName);
 
-        // ÊäÈë³õÊ¼¿Ö¾åÖµ
-        startValue = EditorGUILayout.IntField("³õÊ¼¿Ö¾åÖµ", startValue);
+        // èµ·å§‹ç‚¹æ•°
+        startValue = EditorGUILayout.IntField("èµ·å§‹ç‚¹æ•°", startValue);
 
-        EditorGUILayout.LabelField("Ñ¡ÔñSprite×ÊÔ´£º");
-        int spriteCount = EditorGUILayout.IntField("SpriteÊıÁ¿", spriteArray != null ? spriteArray.Length : 0);
+        EditorGUILayout.LabelField("é€‰æ‹©Spriteèµ„æº");
+
+        // è·å–Spriteæ•°é‡
+        int spriteCount = EditorGUILayout.IntField("Spriteæ•°é‡", spriteArray != null ? spriteArray.Length : 0);
         if (spriteArray == null || spriteArray.Length != spriteCount)
         {
             spriteArray = new Sprite[spriteCount];
         }
 
+        // æ˜¾ç¤ºSpriteé€‰æ‹©æ¡†
         for (int i = 0; i < spriteCount; i++)
         {
             spriteArray[i] = (Sprite)EditorGUILayout.ObjectField($"Sprite {i + 1}", spriteArray[i], typeof(Sprite), false);
         }
 
-        if (GUILayout.Button("Éú³É¿¨ÅÆ"))
+        // ç”Ÿæˆå¡ç‰ŒæŒ‰é’®
+        if (GUILayout.Button("ç”Ÿæˆå¡ç‰Œ"))
         {
             CreateCards();
         }
@@ -55,44 +62,52 @@ public class CardGeneratorWindow : EditorWindow
 
     private void CreateCards()
     {
-        // È·±£Ä¿±êÎÄ¼ş¼Ğ´æÔÚ
+        // ç¡®ä¿ç›®æ ‡æ–‡ä»¶å¤¹å­˜åœ¨
         if (!AssetDatabase.IsValidFolder(folderPath))
         {
             AssetDatabase.CreateFolder("Assets", folderPath.Replace("Assets/", ""));
         }
 
-        // ¼ÓÔØËùÓĞSprite
+        // è·å–æ‰€æœ‰Spriteèµ„æº
         Sprite[] sprites = LoadAllSprites(spriteFolderPath);
 
-        // Éú³É¿¨ÅÆ
+        // åˆ›å»ºå¡ç‰Œ
         for (int i = 0; i < cardCount; i++)
         {
-            // ´´½¨Ò»¸öĞÂµÄScriptableObjectÊµÀı
+            // åˆ›å»ºScriptableObjectå®ä¾‹
             FearCardSO newCard = ScriptableObject.CreateInstance<FearCardSO>();
 
-            // ÉèÖÃÊôĞÔ
+            // è®¾ç½®å¡ç‰Œåç§°
             newCard.cardName = $"{baseName}_{i + 1}";
-            newCard.point = startValue + i;
+            newCard.minpoint = startValue + i;
+            newCard.maxpoint = newCard.minpoint + Random.Range(1, 5); // éšæœºç”Ÿæˆæœ€å¤§ç‚¹æ•°
 
-            // Èç¹ûÓĞ×ã¹»µÄSprite£¬°ó¶¨µ½¿¨ÅÆ
+            // è®¾ç½®å¡ç‰ŒèƒŒæ™¯å’Œè‰ºæœ¯å›¾åƒï¼Œå¦‚æœæœ‰è¶³å¤Ÿçš„Sprite
             if (i < sprites.Length)
             {
-                newCard.sprite = sprites[i];
+                newCard.background = sprites[i];
+                newCard.artSprite = sprites[i]; // å‡è®¾èƒŒæ™¯å’Œè‰ºæœ¯å›¾åƒæ˜¯åŒä¸€å¼ å›¾ç‰‡
             }
 
-            // ±£´æÎª.assetÎÄ¼ş
+            // è®¾ç½®å¡ç‰Œæè¿°
+            if (i < descriptions.Length)
+            {
+                newCard.description = descriptions[i];
+            }
+
+            // ä¿å­˜ä¸º.assetæ–‡ä»¶
             string assetPath = $"{folderPath}/{newCard.cardName}.asset";
             AssetDatabase.CreateAsset(newCard, assetPath);
         }
 
-        // Ë¢ĞÂ×ÊÔ´Êı¾İ¿â
+        // åˆ·æ–°èµ„æº
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        Debug.Log($"³É¹¦Éú³É {cardCount} ÕÅ¿¨ÅÆ£¡");
+        Debug.Log($"æˆåŠŸç”Ÿæˆ {cardCount} å¼ å¡ç‰Œï¼");
     }
 
-    // ¼ÓÔØÖ¸¶¨Â·¾¶ÏÂµÄËùÓĞSprite
+    // åŠ è½½æŒ‡å®šæ–‡ä»¶å¤¹ä¸‹çš„æ‰€æœ‰Spriteèµ„æº
     private static Sprite[] LoadAllSprites(string folderPath)
     {
         string[] spriteGUIDs = AssetDatabase.FindAssets("t:Sprite", new[] { folderPath });

@@ -7,15 +7,17 @@ using UnityEngine.UI;
 
 public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Transform originalParent; // 记录卡牌原始父物体
-    public Transform areaParent; // 记录卡牌原始父物体
-    private bool isSnappingToTarget = false; // 是否正在吸附到目标区域
+    public Transform originalParent; // ??????????????????
+    public Transform areaParent; // ??????????????????
+    private bool isSnappingToTarget = false; // ??????????????????????
     public Vector3 targetPosition;
     public TextMeshProUGUI titleTMP;
     public TextMeshProUGUI pointTMP;
     public TextMeshProUGUI descriptionTMP;
 
-    public Sprite artSprite;
+    public Image background;
+    public Image artSprite;
+    public Image back;
 
     public FearCard card;
 
@@ -27,7 +29,9 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         titleTMP = transform.Find("Front/Title/Text").GetComponent<TextMeshProUGUI>();
         pointTMP = transform.Find("Front/Point/Text").GetComponent<TextMeshProUGUI>();
         descriptionTMP = transform.Find("Front/Description/Text").GetComponent<TextMeshProUGUI>();
-        artSprite = transform.Find("Front/ImageMask/Image").GetComponent<Image>().sprite;
+        background = transform.Find("Front/BackGround").GetComponent<Image>();
+        artSprite = transform.Find("Front/ImageMask/Image").GetComponent<Image>();
+        back = transform.Find("Back").GetComponent<Image>();
 
         cardTun = gameObject.GetComponent<CardTun>();
     }
@@ -38,21 +42,23 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         titleTMP.text = fearCard.cardName;
         pointTMP.text = fearCard.point.ToString();
         descriptionTMP.text = fearCard.description;
-        artSprite = fearCard.sprite;
+        background.sprite = fearCard.background;
+        artSprite.sprite = fearCard.artSprite;
+        back.sprite = fearCard.back;
 
         originalParent = originTransform;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //originalPosition = transform.position; // 记录开始拖动时的位置
-        //originalParent = transform.parent; // 记录原始父物体
-        //transform.SetParent(parentCanvas.transform); // 使卡牌在Canvas下，以便拖动
+        //originalPosition = transform.position; // ????????????????????
+        //originalParent = transform.parent; // ??????????????
+        //transform.SetParent(parentCanvas.transform); // ????????Canvas????????????
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = Input.mousePosition; // 跟随鼠标移动
+        transform.position = Input.mousePosition; // ????????????
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -62,7 +68,7 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
             transform.SetParent(areaParent);
             transform.position = areaParent.position;
             CardTargetArea area = areaParent.gameObject.GetComponent<CardTargetArea>();
-            //当确认区域没有放置卡牌时才能拖入卡牌，一回合只能使用一张卡
+            //??????????????????????????????????????????????????????????
             area.GetReadyToUseCard(this);
         }
         else
@@ -73,7 +79,7 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void ReturnToHand()
     {
-        transform.SetParent(originalParent); // 恢复父物体
+        transform.SetParent(originalParent); // ??????????
         transform.position = originalParent.position;
         //cardTun = gameObject.GetComponent<CardTun>();
         //if (cardTun != null)
@@ -82,13 +88,13 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         //}
         //else
         //{
-        //    Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
+        //    Debug.LogWarning("?????????????????? CardTun ????");
         //}
     }
 
     public void SnapToTarget(Transform areaTransform)
     {
-        // 吸附到目标区域
+        // ??????????????
         areaParent = areaTransform;
         isSnappingToTarget = true;
         
@@ -98,13 +104,27 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         //}
         //else
         //{
-        //    Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
+        //    Debug.LogWarning("?????????????????? CardTun ????");
         //}
     }
 
     public void ResetPosition()
     {
-        // 重置卡牌位置
+        // ????????????
         isSnappingToTarget = false;
+    }
+
+    public void FlipBack(bool istoback)
+    {
+        if (istoback)
+        {
+            cardTun.mCardState = CardState.Back;
+            cardTun.StartBack();
+        }
+        else
+        {
+            cardTun.mCardState = CardState.Front;
+            cardTun.StartFront();
+        }
     }
 }
