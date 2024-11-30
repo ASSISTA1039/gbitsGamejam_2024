@@ -19,9 +19,14 @@ public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public Sprite artSprite;
     public Action<GameItem> onClickedAction;
 
+
+    public TextMeshProUGUI nameTMP;
+
     private void Awake()
     {
         artSprite = transform.Find("Image").GetComponent<Image>().sprite;
+
+        nameTMP = transform.Find("Name").GetComponent<TextMeshProUGUI>();
     }
 
     public void SetUI(GameItem item, Transform originTransform, Action<GameItem> callback)
@@ -31,6 +36,8 @@ public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         this.onClickedAction = callback;
 
         originalParent = originTransform;
+
+        nameTMP.text = item.itemName;
     }
 
     //public void OnPointerDown(PointerEventData eventData)

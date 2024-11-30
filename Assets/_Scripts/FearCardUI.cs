@@ -9,7 +9,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 {
     public Transform originalParent; // 记录卡牌原始父物体
     public Transform areaParent; // 记录卡牌原始父物体
-    //public Canvas parentCanvas; // 父物体的Canvas，用于处理拖动
     private bool isSnappingToTarget = false; // 是否正在吸附到目标区域
     public Vector3 targetPosition;
     public TextMeshProUGUI titleTMP;
@@ -25,11 +24,12 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     private void Awake()
     {
-        //parentCanvas = GetComponentInParent<Canvas>();
         titleTMP = transform.Find("Front/Title/Text").GetComponent<TextMeshProUGUI>();
         pointTMP = transform.Find("Front/Point/Text").GetComponent<TextMeshProUGUI>();
         descriptionTMP = transform.Find("Front/Description/Text").GetComponent<TextMeshProUGUI>();
         artSprite = transform.Find("Front/ImageMask/Image").GetComponent<Image>().sprite;
+
+        cardTun = gameObject.GetComponent<CardTun>();
     }
 
     public void SetUI(FearCard fearCard, Transform originTransform)
@@ -75,15 +75,15 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         transform.SetParent(originalParent); // 恢复父物体
         transform.position = originalParent.position;
-        cardTun = gameObject.GetComponent<CardTun>();
-        if (cardTun != null)
-        {
-            cardTun.StartFront();
-        }
-        else
-        {
-            Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
-        }
+        //cardTun = gameObject.GetComponent<CardTun>();
+        //if (cardTun != null)
+        //{
+        //    cardTun.StartFront();
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
+        //}
     }
 
     public void SnapToTarget(Transform areaTransform)
@@ -91,15 +91,15 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         // 吸附到目标区域
         areaParent = areaTransform;
         isSnappingToTarget = true;
-        cardTun = gameObject.GetComponent<CardTun>();
-        if (cardTun != null)
-        {
-            cardTun.StartBack();
-        }
-        else
-        {
-            Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
-        }
+        
+        //if (cardTun != null)
+        //{
+        //    cardTun.StartBack();
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("选中的卡牌没有挂载 CardTun 脚本");
+        //}
     }
 
     public void ResetPosition()
