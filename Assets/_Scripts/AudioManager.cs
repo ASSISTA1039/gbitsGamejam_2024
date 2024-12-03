@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,21 +7,21 @@ public class AudioManager : MonoBehaviour
 {
     public AudioSource bgm;
     public AudioSource audioSource;  // AudioSource for playing sound effects
-    [Header("Å®º¢¿¨ÅÆÒôĞ§")]
+    [Header("Å®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§")]
     public AudioClip BatCardSound; // Sound effect for dealing cards
     public AudioClip BoomCardSound; // Sound effect for choosing card
     public AudioClip BowCardSound; // Sound effect for choosing item
     public AudioClip HammerCardSound; // Sound effect for comparing points
     public AudioClip FireCardSound; // Sound effect for comparing points
 
-    [Header("ÃÎÊŞ¿¨ÅÆÒôĞ§")]
+    [Header("ï¿½ï¿½ï¿½Ş¿ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§")]
     public AudioClip ChristmasCardSound; // Sound effect for dealing cards
     public AudioClip DentalCardSound; // Sound effect for choosing card
     public AudioClip DogCardSound; // Sound effect for choosing item
     public AudioClip GhostCardSound; // Sound effect for comparing points
     public AudioClip JokerCardSound; // Sound effect for comparing points
 
-    [Header("µÀ¾ßÒôĞ§")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§")]
     public AudioClip PeekItemSound; // Sound effect for dealing cards
     public AudioClip ChangeCardItemSound; // Sound effect for choosing card
     public AudioClip ForceChangeCardItemSound; // Sound effect for choosing item
@@ -49,12 +49,12 @@ public class AudioManager : MonoBehaviour
         map.Add("GhostCard", GhostCardSound);
         map.Add("JokerCard", JokerCardSound);
 
-        map.Add("ÕìÌ½ÑÛ¾¦", PeekItemSound);
-        map.Add("×¥ÍŞÍŞ×¦×Ó", ChangeCardItemSound);
-        map.Add("¹íÊÖ", ForceChangeCardItemSound);
-        map.Add("×³µ¨", EncourageItemSound);
-        map.Add("Õ¼²·", DivinationItemSound);
-        map.Add("½»»¥", SwapCardPointsItemSound);
+        map.Add("ä¾¦æ¢çœ¼ç›", PeekItemSound);
+        map.Add("æŠ“å¨ƒå¨ƒçˆªå­", ChangeCardItemSound);
+        map.Add("é¬¼æ‰‹", ForceChangeCardItemSound);
+        map.Add("å£®èƒ†", EncourageItemSound);
+        map.Add("å åœ", DivinationItemSound);
+        map.Add("äº¤äº’", SwapCardPointsItemSound);
     }
 
     public void AddMap(string key, AudioClip value)
@@ -66,24 +66,24 @@ public class AudioManager : MonoBehaviour
     {
         return map[key];
     }
-    // ²¥·ÅÒôĞ§µÄ·½·¨
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½Ä·ï¿½ï¿½ï¿½
     public void PlayCardSound(string cardName)
     {
         AudioClip clipToPlay = FindSound(cardName);
 
-        // Èç¹ûÕÒµ½¶ÔÓ¦µÄÒôĞ§£¬²¥·ÅËü
+        // ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (clipToPlay != null)
         {
             audioSource.PlayOneShot(clipToPlay);
         }
     }
 
-    // ²¥·ÅµÀ¾ßÒôĞ§
+    // ï¿½ï¿½ï¿½Åµï¿½ï¿½ï¿½ï¿½ï¿½Ğ§
     public void PlayItemSound(string itemName)
     {
         AudioClip clipToPlay = FindSound(itemName);
 
-        // Èç¹ûÕÒµ½¶ÔÓ¦µÄÒôĞ§£¬²¥·ÅËü
+        // ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ğ§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (clipToPlay != null)
         {
             audioSource.PlayOneShot(clipToPlay);

@@ -48,7 +48,8 @@ public class GameManager : MonoBehaviour
     public Sprite[] roundSprites;
     public TextMeshProUGUI roundText;
 
-    public TextMeshProUGUI contextDisplay;
+    public TextMeshProUGUI contentDisplay;
+    public bool isInfoDisplaying;
 
     public Animator girlAnimator; 
     public Animator monsterAnimator;
@@ -76,7 +77,7 @@ public class GameManager : MonoBehaviour
     public TextScroller scroller;
 
     //��ʼ��
-    private async void Awake()
+    private void Awake()
     {
         //cardPrefab = Resources.Load<GameObject>("CardTemplete");
         //itemPrefab = Resources.Load<GameObject>("ItemTemplete");
@@ -93,12 +94,12 @@ public class GameManager : MonoBehaviour
         roundDisplay = transform.Find("Round").GetComponent<CardTun>();
         roundText = transform.Find("Round/Num").GetComponent<TextMeshProUGUI>();
 
-        contextDisplay = transform.Find("ItemDisplay/Mask/Context").GetComponent<TextMeshProUGUI>();
+        contentDisplay = transform.Find("ItemDisplay/Mask/content").GetComponent<TextMeshProUGUI>();
 
         spritesMap = transform.Find("SpriteManager").GetComponent<SpriteManager>();
         audioManager = transform.Find("AudioManager").GetComponent<AudioManager>();
 
-        scroller = contextDisplay.gameObject.GetComponent<TextScroller>();
+        scroller = contentDisplay.gameObject.GetComponent<TextScroller>();
 
         DOTween.Init();
         InitGame();
@@ -108,7 +109,6 @@ public class GameManager : MonoBehaviour
 
     private void InitGame()
     {
-        PlayVictoryVideo();
         spritesMap.InitMap();
         audioManager.InitMap();
 
@@ -160,7 +160,7 @@ public class GameManager : MonoBehaviour
     {
 
         Debug.Log($"回合{currentRound} 开始");
-        contextDisplay.text += $"回合{currentRound} 开始";
+        contentDisplay.text = $"回合{currentRound} 开始";
         
         roundText.text = $"当前回合：{currentRound}";
         monsterPointText.text = $"{monsterSurplusPoint}";
@@ -170,7 +170,6 @@ public class GameManager : MonoBehaviour
         if (currentRound == 3)
         {
             Debug.Log("双方获得道具");
-            // ���ӵ����߼�������չ��
             for (int i = 0; i < 3; i++)
             {
                 girl.AddItem(itemPool[Random.Range(0, itemPool.Count)]);
@@ -181,17 +180,11 @@ public class GameManager : MonoBehaviour
             }
         }
         StartCoroutine(PlayDealCardsAnimation());
-        //��һ�׶�
-        //currentPhase = GamePhase.Cover;
-        //RunPhase();
     }
 
     private IEnumerator PlayDealCardsAnimation()
     {
-
-        //���ص���UI��Ȼ����ʾ����UI
-        HidePlayerCardUI();
-        HidePlayerItemUI();
+        DisplayPlayerItemUI(false);
         yield return new WaitForSecondsRealtime(2f);
 
         List<FearCard> cards = monster.GetCards();
@@ -213,10 +206,8 @@ public class GameManager : MonoBehaviour
                 cardUI.transform.SetParent(cardSlots[i], false );
             }
 
-            // ���ÿ���UI����
             cardUI.SetUI(card, cardSlots[i]);
 
-            // ���ݿ���״̬��ʾ������ UI
             if (card.isUsed)
             {
                 Debug.Log($"隐藏第 {i} 张已使用卡牌：{card.cardName}");
@@ -230,12 +221,10 @@ public class GameManager : MonoBehaviour
                 cardUI.transform.DOMove(cardSlots[i].position, 1f).SetEase(Ease.InOutQuad);
                 yield return new WaitForSecondsRealtime(1f); // �ӳ�һ�£�ȷ��ÿ�ſ����е�ʱ�们��
             }
-
         }
 
         yield return new WaitForSecondsRealtime(1f); // �ȴ���������Ч�������
 
-        // ���ƽ��������ѡ���ƽ׶�
         currentPhase = GamePhase.Cover;
         RunPhase();
     }
@@ -341,9 +330,6 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator PlayDealItemsAnimation()
     {
-        HidePlayerCardUI();
-        HidePlayerItemUI();
-
         // ȷ�����ֹ��򣺼���ż���غϵ������֣������غ��������
         bool isPlayerTurn = currentRound % 2 != 0;
 
@@ -356,7 +342,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandleItemPhase(bool isPlayerTurn)
     {
-        contextDisplay.text += ($"{(isPlayerTurn ? $"{monster.name}" : $"{girl.name}")}先手开始道具阶段");
+        DisplayPlayerCardUI(false);
+        contentDisplay.text = $"{(isPlayerTurn ? $"{monster.name}" : $"{girl.name}")}先手开始道具阶段";
 
         if (isPlayerTurn)
         {
@@ -378,9 +365,11 @@ public class GameManager : MonoBehaviour
                     itemUI = Instantiate(itemPrefab, itemSlots[i]).GetComponent<GameItemUI>();
                 }
 
+                itemUI.gameObject.SetActive(true);
                 // ���õ���UI����
                 itemUI.gameObject.transform.localPosition = Vector3.zero;
                 itemUI.SetUI(item, itemSlots[i]);
+                itemUI.SetTooltipText(item.itemName, item.description);
                 itemUI.gameObject.transform.position = monsterTransform.transform.position;
                 itemUI.transform.DOMove(itemSlots[i].position, 1f).SetEase(Ease.InOutQuad);
                 yield return new WaitForSecondsRealtime(1f); // �ӳ�һ�£�ȷ��ÿ�ſ����е�ʱ�们��
@@ -431,8 +420,7 @@ public class GameManager : MonoBehaviour
                     // ���õ���UI����
                     itemUI.gameObject.transform.localPosition = Vector3.zero;
                     itemUI.SetUI(item, itemSlots[i]);
-                    itemUI.GetComponent<TooltipTrigger>().header = item.itemName;
-                    itemUI.GetComponent<TooltipTrigger>().header = item.description;
+                    itemUI.SetTooltipText(item.itemName, item.description);
                     itemUI.gameObject.transform.position = monsterTransform.transform.position;
                     itemUI.transform.DOMove(itemSlots[i].position, 1f).SetEase(Ease.InOutQuad);
                     yield return new WaitForSecondsRealtime(1f); // �ӳ�һ�£�ȷ��ÿ�ſ����е�ʱ�们��
@@ -459,7 +447,6 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("玩家的道具回合");
 
-
         // �ȴ����ѡ�����
         bool itemUsed = false;
         GameItem selectedItem = null;
@@ -471,9 +458,11 @@ public class GameManager : MonoBehaviour
             if (selectedItem != null)
             {
                 Debug.Log($"玩家使用道具：{selectedItem.itemName}");
-                List<FearCard> cards = selectedItem.Use(monster, girl, monsterSelectedCard, girlSelectedCard, contextDisplay);
+                List<FearCard> cards = selectedItem.Use(monster, girl, monsterSelectedCard, girlSelectedCard, contentDisplay);
                 monsterSelectedCard = cards[0];
                 girlSelectedCard = cards[1];
+                contentDisplay.text = selectedItem.displayString;
+
                 monster.RemoveItem(selectedItem);
                 itemUsed = true;
 
@@ -512,9 +501,12 @@ public class GameManager : MonoBehaviour
             if (selectedItem != null)
             {
                 Debug.Log($"敌人使用道具：{selectedItem.itemName}");
-                List<FearCard> cards = selectedItem.Use(girl, monster, girlSelectedCard, monsterSelectedCard, contextDisplay);
+                List<FearCard> cards = selectedItem.Use(girl, monster, girlSelectedCard, monsterSelectedCard, contentDisplay);
                 girlSelectedCard = cards[0];
                 monsterSelectedCard = cards[1];
+                contentDisplay.text = selectedItem.displayString;
+                StartCoroutine(StartInfoDisplay(contentDisplay.text));
+
                 girl.RemoveItem(selectedItem);
 
                 scroller.Scroll();
@@ -648,7 +640,7 @@ public class GameManager : MonoBehaviour
         {
             GameItem selectedItem = monsterItemArea.GetAreaItem();
             Debug.Log($"玩家使用道具：{selectedItem.itemName}");
-            List<FearCard> cards = selectedItem.Use(monster, girl, monsterSelectedCard, girlSelectedCard, contextDisplay);
+            List<FearCard> cards = selectedItem.Use(monster, girl, monsterSelectedCard, girlSelectedCard, contentDisplay);
             monsterSelectedCard = cards[0];
             girlSelectedCard = cards[1];
             monster.RemoveItem(selectedItem);
@@ -707,7 +699,7 @@ public class GameManager : MonoBehaviour
             audioManager.PlayCardSound(monsterSelectedCard.cardName);
             girlAnimator.SetTrigger($"TriggerHurt");
 
-            contextDisplay.text += ($"\n{monster.name}获胜，{girl.name}增加一点恐惧值 ({girl.GetFearValue()})");
+            contentDisplay.text = $"{monster.name}获胜，{girl.name}增加一点恐惧值 ({girl.GetFearValue()})";
         }
         else if (playerPoint < enemyPoint)
         {
@@ -718,7 +710,7 @@ public class GameManager : MonoBehaviour
             audioManager.PlayCardSound(girlSelectedCard.cardName);
             monsterAnimator.SetTrigger($"TriggerHurt");
 
-            contextDisplay.text += ($"\n{girl.name}获胜，{monster.name}增加一点恐惧值 ({monster.GetFearValue()})");
+            contentDisplay.text = $"{girl.name}获胜，{monster.name}增加一点恐惧值 ({monster.GetFearValue()})";
         }
         else
         {
@@ -741,8 +733,9 @@ public class GameManager : MonoBehaviour
             // 等待动画结束
             yield return new WaitUntil(() => girlAnimator.GetCurrentAnimatorStateInfo(0).IsName("Idle"));
 
-            contextDisplay.text += ($"\n平局，双方都增加1恐惧值({monster.GetFearValue()}):({girl.GetFearValue()})");
+            contentDisplay.text = $"平局，双方都增加1恐惧值({monster.GetFearValue()}):({girl.GetFearValue()})";
         }
+        StartCoroutine(StartInfoDisplay(contentDisplay.text));
         yield return new WaitForSecondsRealtime(3f);
 
         monsterCardArea.ClearReadyToUseCard();
@@ -894,9 +887,6 @@ public class GameManager : MonoBehaviour
 
     public void RefreshPlayerCardUI(Player player)
     {
-        //���ص���UI��Ȼ����ʾ����UI
-        HidePlayerItemUI();
-
         List<FearCard> cards = player.GetCards();
         if (cards.Count == 0)
         {
@@ -918,24 +908,23 @@ public class GameManager : MonoBehaviour
             // ���ÿ���UI����
             cardUI.SetUI(card, cardSlots[i]);
 
-            // ���ݿ���״̬��ʾ������ UI
-            if (card.isUsed)
-            {
-                Debug.Log($"隐藏第 {i} 张已使用卡牌：{card.cardName}");
-                cardUI.gameObject.SetActive(false);
-            }
-            else
-            {
-                Debug.Log($"显示第 {i} 张未使用卡牌：{card.cardName}");
-                cardUI.gameObject.SetActive(true);
-                cardUI.gameObject.transform.localPosition = Vector3.zero;
-            }
+            //if (card.isUsed)
+            //{
+            //    Debug.Log($"隐藏第 {i} 张已使用卡牌：{card.cardName}");
+            //    cardUI.gameObject.SetActive(false);
+            //}
+            //else
+            //{
+            //    Debug.Log($"显示第 {i} 张未使用卡牌：{card.cardName}");
+            //    cardUI.gameObject.SetActive(true);
+            //    cardUI.gameObject.transform.localPosition = Vector3.zero;
+            //}
         }
 
 
     }
 
-    public void HidePlayerCardUI()
+    public void DisplayPlayerCardUI(bool isDisplay)
     {
         for (int i = 0; i < cardSlots.Length; i++)
         {
@@ -943,15 +932,13 @@ public class GameManager : MonoBehaviour
             {
                 continue;
             }
-            Destroy(cardSlots[i].GetChild(0).gameObject);
+            cardSlots[i].GetChild(0).gameObject.SetActive(isDisplay);
         }
 
     }
 
     public void RefreshPlayerItemUI(Player player)
     {
-        //���ؿ���UI��Ȼ����ʾ����UI
-        HidePlayerCardUI();
 
         List<GameItem> items = player.GetItems();
         if (items.Count == 0)
@@ -978,7 +965,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void HidePlayerItemUI()
+    public void DisplayPlayerItemUI(bool isDisplay)
     {
         for (int i = 0; i < itemSlots.Length; i++)
         {
@@ -986,9 +973,9 @@ public class GameManager : MonoBehaviour
             {
                 continue;
             }
-            Destroy(itemSlots[i].GetChild(0).gameObject);
+            //Destroy(itemSlots[i].GetChild(0).gameObject);
+            itemSlots[i].GetChild(0).gameObject.SetActive(isDisplay);
         }
-
     }
 
     public void InitGameItems(Player player, Player enemy)
@@ -1060,6 +1047,25 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private IEnumerator StartInfoDisplay(string content)
+    {
+        isInfoDisplaying = true;
+        DisplayPlayerCardUI(false);
+        DisplayPlayerItemUI(false);
+
+        //
+        //设置文本
+        contentDisplay.text = content;
+
+        //（可选）打字机效果
+        //等待
+        yield return new WaitForSecondsRealtime(2f);
+
+        //结束标志
+        isInfoDisplaying = false;
+    }
+
+    #region 视频播放
     private bool isVideoPlayed;
 
     // 播放胜利视频
@@ -1116,25 +1122,6 @@ public class GameManager : MonoBehaviour
         Debug.Log("视频播放完毕");
     }
 
-    IEnumerator LoadYourAsyncScene()
-    {
-        // The Application loads the Scene in the background as the current Scene runs.
-        // This is particularly good for creating loading screens.
-        // You could also load the Scene by using sceneBuildIndex. In this case Scene2 has
-        // a sceneBuildIndex of 1 as shown in Build Settings.
-
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("StartScene");
-        asyncLoad.allowSceneActivation = false;
-
-        // Wait until the asynchronous scene fully loads
-        while (!asyncLoad.isDone && !isVideoPlayed)
-        {
-            yield return null;
-        }
-
-        asyncLoad.allowSceneActivation = true;
-    }
-
     // 禁用 UI 元素
     private void DisableUIElements()
     {
@@ -1151,4 +1138,5 @@ public class GameManager : MonoBehaviour
         confirmBtn.interactable = true;
         finishBtn.interactable = true;
     }
+    #endregion
 }

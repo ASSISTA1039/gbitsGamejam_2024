@@ -20,10 +20,13 @@ public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public Image back;
     public CardTun cardTun;
 
+    public TooltipTrigger tooltipTrigger;
+
     private void Awake()
     {
         art = transform.Find("Front/Image").GetComponent<Image>();
         back = transform.Find("Back").GetComponent<Image>();
+        tooltipTrigger = GetComponent<TooltipTrigger>();
 
         cardTun = gameObject.GetComponent<CardTun>();
     }
@@ -36,6 +39,12 @@ public class GameItemUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
         originalParent = originTransform;
 
+    }
+
+    public void SetTooltipText(string header, string context)
+    {
+        tooltipTrigger.header = header;
+        tooltipTrigger.content = context;
     }
 
     //public void OnPointerDown(PointerEventData eventData)

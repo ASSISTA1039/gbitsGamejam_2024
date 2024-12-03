@@ -56,6 +56,7 @@ MonoBehaviour:
   art: {fileID: 0}
   back: {fileID: 0}
   cardTun: {fileID: 0}
+  tooltipTrigger: {fileID: 0}
 --- !u!114 &1249586611425950473
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,8 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6450cd9b6aa44d54fa2db024ac890735, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  header: 1
-  content: 111
+  header: 
+  content: 
 --- !u!1 &526890395612592280
 GameObject:
   m_ObjectHideFlags: 0

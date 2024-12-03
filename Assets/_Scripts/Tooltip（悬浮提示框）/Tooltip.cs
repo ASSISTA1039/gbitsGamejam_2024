@@ -11,6 +11,7 @@ public class Tooltip : MonoBehaviour
     public LayoutElement layoutElement;
     public int characterWrapLimit;
     public RectTransform rectTransform;
+    public RectTransform canvasRectTransform;
 
     //[SerializeField]float offsetx = 5;
     //[SerializeField]float offsety = 5;
@@ -32,6 +33,11 @@ public class Tooltip : MonoBehaviour
         }
         contentField.text = content;
 
+        int headerLength = headerField.text.Length;
+        int contentLength = contentField.text.Length;
+
+        layoutElement.enabled = Mathf.Max(headerField.preferredWidth, contentField.preferredWidth) >= layoutElement.preferredWidth;
+
     }
 
     // Update is called once per frame
@@ -42,16 +48,32 @@ public class Tooltip : MonoBehaviour
             int headerLength = headerField.text.Length;
             int contentLength = contentField.text.Length;
 
-            layoutElement.enabled = Mathf.Max(headerField.preferredWidth, contentField.preferredWidth) > layoutElement.preferredWidth;
+            layoutElement.enabled = Mathf.Max(headerField.preferredWidth, contentField.preferredWidth) >= layoutElement.preferredWidth;
         }
 
-        Vector2 position = Input.mousePosition;
 
-        float pivotX = position.x / Screen.width;
-        float pivotY = position.y / Screen.height;
+        //Vector2 position = Input.mousePosition;
 
-        rectTransform.pivot = new Vector2(pivotX, pivotY);
-        transform.position = position;
+        //float pivotX = position.x / Screen.width;
+        //float pivotY = position.y / Screen.height;
+
+        //rectTransform.pivot = new Vector2(pivotX, pivotY);
+        //transform.position = position;
+
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(transform.parent.GetComponent<RectTransform>(), Input.mousePosition, null, out localPoint);
+        transform.localPosition = localPoint;
+
+        Vector2 anchoredPosition = rectTransform.anchoredPosition;
+        if (anchoredPosition.x + rectTransform.rect.width > canvasRectTransform.rect.width)
+        {
+            anchoredPosition.x = canvasRectTransform.rect.width - rectTransform.rect.width;
+        }
+        if (anchoredPosition.y + rectTransform.rect.height > canvasRectTransform.rect.height)
+        {
+            anchoredPosition.y = canvasRectTransform.rect.height - rectTransform.rect.height;
+        }
+        rectTransform.anchoredPosition = anchoredPosition;
 
     }
 }

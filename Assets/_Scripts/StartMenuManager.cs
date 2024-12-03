@@ -3,14 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class StartMenuManager : MonoBehaviour
 {
-    public Button startButton;  // ¿ªÊ¼°´Å¥
-    public Button aboutButton;  // ¹ØÓÚ°´Å¥
-    public Button exitButton;   // ÍË³ö°´Å¥
-    public GameObject aboutPanel;  // ¹ØÓÚµ¯³ö´°¿Ú
-    public Sprite curror;
+    public Button startButton;  // ï¿½ï¿½Ê¼ï¿½ï¿½Å¥
+    public Button aboutButton;  // ï¿½ï¿½ï¿½Ú°ï¿½Å¥
+    public Button exitButton;   // ï¿½Ë³ï¿½ï¿½ï¿½Å¥
+    public GameObject aboutPanel;  // ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public Sprite cursor;
+
+    public VideoPlayer videoPlayer; // ç”¨äºæ’­æ”¾è§†é¢‘
+    public RawImage rawImage; // æ˜¾ç¤ºè§†é¢‘çš„RawImage
+    public VideoClip startClip;     // å¼€åœºè§†é¢‘
 
     // Start is called before the first frame update
     void Awake()
@@ -19,37 +24,98 @@ public class StartMenuManager : MonoBehaviour
         aboutButton = transform.Find("ButtonLayout/About").GetComponent<Button>();
         exitButton = transform.Find("ButtonLayout/Exit").GetComponent<Button>();
 
-        // ¸ø°´Å¥Ìí¼Óµã»÷ÊÂ¼ş
+        // ï¿½ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Â¼ï¿½
         startButton.onClick.AddListener(OnStartButtonClicked);
         exitButton.onClick.AddListener(OnExitButtonClicked);
         aboutButton.onClick.AddListener(OnAboutButtonClicked);
 
         aboutPanel = transform.Find("AboutPanel").gameObject;
-        // ³õÊ¼»¯Ê±Òş²Ø¹ØÓÚµ¯³ö´°¿Ú
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½ï¿½ï¿½Ø¹ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         aboutPanel.SetActive(false);
     }
 
-    // µã»÷¿ªÊ¼°´Å¥£¬¼ÓÔØÏÂÒ»¸ö³¡¾°
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private void OnStartButtonClicked()
     {
-        SceneManager.LoadScene("MainScene"); 
+        PlayStartVideo();
     }
 
-    // µã»÷ÍË³ö°´Å¥£¬¹Ø±ÕÓÎÏ·
+    // ï¿½ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿½Ï·
     private void OnExitButtonClicked()
     {
-        Application.Quit();  // ÍË³öÓÎÏ·
+        Application.Quit();  // ï¿½Ë³ï¿½ï¿½ï¿½Ï·
     }
 
-    // µã»÷¹ØÓÚ°´Å¥£¬ÏÔÊ¾¿ª·¢ÕßÃûµ¥µÄµ¯³ö´°¿Ú
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú°ï¿½Å¥ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private void OnAboutButtonClicked()
     {
-        aboutPanel.SetActive(true);  // ÏÔÊ¾¹ØÓÚ´°¿Ú
+        aboutPanel.SetActive(true);  // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ú´ï¿½ï¿½ï¿½
     }
 
-    // ¹Ø±Õ¹ØÓÚ´°¿Ú
+    // ï¿½Ø±Õ¹ï¿½ï¿½Ú´ï¿½ï¿½ï¿½
     public void CloseAboutPanel()
     {
-        aboutPanel.SetActive(false);  // Òş²Ø¹ØÓÚ´°¿Ú
+        aboutPanel.SetActive(false);  // ï¿½ï¿½ï¿½Ø¹ï¿½ï¿½Ú´ï¿½ï¿½ï¿½
     }
+
+    #region è§†é¢‘æ’­æ”¾
+    private bool isVideoPlayed;
+
+    private void PlayStartVideo()
+    {
+        PlayVideo(startClip);
+    }
+
+    // æ’­æ”¾è§†é¢‘çš„é€šç”¨æ–¹æ³•
+    private void PlayVideo(VideoClip clip)
+    {
+        isVideoPlayed = false;
+        // è®¾ç½® VideoPlayer çš„è§†é¢‘èµ„æº
+        videoPlayer.clip = clip;
+
+        // æ˜¾ç¤ºè§†é¢‘ RawImage
+        rawImage.gameObject.SetActive(true);
+        rawImage.transform.SetAsLastSibling();
+        // æ’­æ”¾è§†é¢‘
+        videoPlayer.Play();
+
+        // ç­‰å¾…è§†é¢‘æ’­æ”¾ç»“æŸ
+        videoPlayer.loopPointReached += EndOfVideo; // æ³¨å†Œå›è°ƒå‡½æ•°
+
+        // ç¦ç”¨å…¶ä»– UI æ§ä»¶ï¼Œé˜²æ­¢åœ¨æ’­æ”¾è§†é¢‘æ—¶è¿›è¡Œæ“ä½œ
+        DisableUIElements();
+    }
+
+    // è§†é¢‘æ’­æ”¾ç»“æŸåçš„å›è°ƒå‡½æ•°
+    private void EndOfVideo(VideoPlayer vp)
+    {
+        // è§†é¢‘æ’­æ”¾å®Œæˆåï¼Œæ¢å¤ UI æ§ä»¶
+        EnableUIElements();
+        rawImage.gameObject.SetActive(false);
+        isVideoPlayed = true;
+
+        SceneManager.LoadScene("MainScene");
+        // åœ¨æ’­æ”¾å®Œè§†é¢‘åï¼Œå¯ä»¥æ‰§è¡Œåç»­çš„é€»è¾‘ï¼Œæ¯”å¦‚è¿›å…¥ä¸‹ä¸€åœºæ™¯ã€é‡å¯æ¸¸æˆç­‰
+        Debug.Log("è§†é¢‘æ’­æ”¾å®Œæ¯•");
+    }
+
+    // ç¦ç”¨ UI å…ƒç´ 
+    private void DisableUIElements()
+    {
+        // ç¦ç”¨æ¸¸æˆä¸­çš„å…¶ä»– UI å…ƒç´ ï¼Œé˜²æ­¢æ“ä½œ
+        // æ¯”å¦‚ç¦ç”¨æŒ‰é’®ï¼Œæ–‡æœ¬ï¼Œç­‰
+        startButton.interactable = false;
+        aboutButton.interactable = false;
+        exitButton.interactable = false;
+    }
+
+    // å¯ç”¨ UI å…ƒç´ 
+    private void EnableUIElements()
+    {
+        // æ¢å¤ UI å…ƒç´ çš„äº¤äº’
+        startButton.interactable = true;
+        aboutButton.interactable = true;
+        exitButton.interactable = true;
+    }
+    #endregion
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,28 +7,28 @@ public class SpriteManager : MonoBehaviour
 {
     public Sprite CardBackSprite; // Sprite effect for comparing points
     public Sprite ItemBackSprite; // Sprite effect for comparing points
-    //[Header("Å®º¢¿¨ÅÆÍ¼Æ¬")]
+    //[Header("Å®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼Æ¬")]
     //public Sprite BatCardSprite; // Sprite effect for dealing cards
     //public Sprite BoomCardSprite; // Sprite effect for choosing card
     //public Sprite BowCardSprite; // Sprite effect for choosing item
     //public Sprite HammerCardSprite; // Sprite effect for comparing points
     //public Sprite FireCardSprite; // Sprite effect for comparing points
 
-    //[Header("ÃÎÊŞ¿¨ÅÆÍ¼Æ¬")]
+    //[Header("ï¿½ï¿½ï¿½Ş¿ï¿½ï¿½ï¿½Í¼Æ¬")]
     //public Sprite ChristmasCardSprite; // Sprite effect for dealing cards
     //public Sprite DentalCardSprite; // Sprite effect for choosing card
     //public Sprite DogCardSprite; // Sprite effect for choosing item
     //public Sprite GhostCardSprite; // Sprite effect for comparing points
     //public Sprite JokerCardSprite; // Sprite effect for comparing points
 
-    [Header("µÀ¾ßÍ¼Æ¬")]
+    [Header("ï¿½ï¿½ï¿½ï¿½Í¼Æ¬")]
     public Sprite PeekItemSprite; // Sprite effect for dealing cards
     public Sprite ChangeCardItemSprite; // Sprite effect for choosing card
     public Sprite ForceChangeCardItemSprite; // Sprite effect for choosing item
     public Sprite EncourageItemSprite; // Sprite effect for comparing points
     public Sprite DivinationItemSprite; // Sprite effect for comparing points
     public Sprite SwapCardPointsItemSprite; // Sprite effect for comparing points
-
+    
     public Dictionary<string, Sprite> map = new Dictionary<string, Sprite>();
 
     public void InitMap()
@@ -48,12 +48,12 @@ public class SpriteManager : MonoBehaviour
         //map.Add("GhostCard", GhostCardSprite);
         //map.Add("JokerCard", JokerCardSprite);
 
-        map.Add("ÕìÌ½ÑÛ¾¦", PeekItemSprite);
-        map.Add("×¥ÍŞÍŞ×¦×Ó", ChangeCardItemSprite);
-        map.Add("¹íÊÖ", ForceChangeCardItemSprite);
-        map.Add("×³µ¨", EncourageItemSprite);
-        map.Add("Õ¼²·", DivinationItemSprite);
-        map.Add("½»»¥", SwapCardPointsItemSprite);
+        map.Add("ä¾¦æ¢çœ¼ç›", PeekItemSprite);
+        map.Add("æŠ“å¨ƒå¨ƒçˆªå­", ChangeCardItemSprite);
+        map.Add("é¬¼æ‰‹", ForceChangeCardItemSprite);
+        map.Add("å£®èƒ†", EncourageItemSprite);
+        map.Add("å åœ", DivinationItemSprite);
+        map.Add("äº¤äº’", SwapCardPointsItemSprite);
     }
 
     public void AddMap(string key, Sprite value)
