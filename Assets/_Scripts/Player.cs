@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Player : ICardManager
 {
+    public string name;
     private List<FearCard> handingCards = new List<FearCard>();
     private List<GameItem> items = new List<GameItem>();
     private List<FearCard> usedCards = new List<FearCard>();
@@ -12,6 +13,10 @@ public class Player : ICardManager
     //private bool isBanned = false;
 
     //≥ı ºªØ
+    public Player(string name) 
+    {
+        this.name = name;
+    }
     public void AddCard(FearCard card)
     {
         card.isUsed = false;

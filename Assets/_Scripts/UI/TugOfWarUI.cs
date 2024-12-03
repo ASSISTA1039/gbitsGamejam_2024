@@ -40,16 +40,16 @@ public class TugOfWarUI : MonoBehaviour
 
     IEnumerator SmoothUpdate(float targetAWidth, float targetBWidth)
     {
-        float duration = 2f; // ��������ʱ��
+        float duration = 1f; // ��������ʱ��
         float elapsed = 0f;
-
-        Vector2 initialRedSize = girlBar.sizeDelta;
-        Vector2 initialBlueSize = monsterBar.sizeDelta;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);  // ��ֵֹ����1
+
+            Vector2 initialRedSize = girlBar.sizeDelta;
+            Vector2 initialBlueSize = monsterBar.sizeDelta;
 
             girlBar.sizeDelta = Vector2.Lerp(initialRedSize, new Vector2(targetAWidth, girlBar.sizeDelta.y), t);
             monsterBar.sizeDelta = Vector2.Lerp(initialBlueSize, new Vector2(targetBWidth, monsterBar.sizeDelta.y), t);
@@ -58,5 +58,6 @@ public class TugOfWarUI : MonoBehaviour
         }
         girlBar.sizeDelta = new Vector2(targetAWidth, girlBar.sizeDelta.y);
         monsterBar.sizeDelta = new Vector2(targetBWidth, monsterBar.sizeDelta.y);
+        yield return null;
     }
 }

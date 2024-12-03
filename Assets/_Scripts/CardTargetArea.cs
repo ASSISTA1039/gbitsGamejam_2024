@@ -66,4 +66,8 @@ public class CardTargetArea : MonoBehaviour
         readyToUseCardUI.FlipBack(istoback);
     }
 
+    public void UpdatePoint(FearCard card)
+    {
+        readyToUseCardUI.UpdatePoint(card.point);
+    }
 }

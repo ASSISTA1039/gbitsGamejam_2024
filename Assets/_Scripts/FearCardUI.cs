@@ -11,7 +11,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public Transform areaParent; // ??????????????????
     private bool isSnappingToTarget = false; // ??????????????????????
     public Vector3 targetPosition;
-    public TextMeshProUGUI titleTMP;
     public TextMeshProUGUI pointTMP;
     public TextMeshProUGUI descriptionTMP;
 
@@ -26,7 +25,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     private void Awake()
     {
-        titleTMP = transform.Find("Front/Title/Text").GetComponent<TextMeshProUGUI>();
         pointTMP = transform.Find("Front/Point/Text").GetComponent<TextMeshProUGUI>();
         descriptionTMP = transform.Find("Front/Description/Text").GetComponent<TextMeshProUGUI>();
         background = transform.Find("Front/BackGround").GetComponent<Image>();
@@ -39,7 +37,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     public void SetUI(FearCard fearCard, Transform originTransform)
     {
         card = fearCard;
-        titleTMP.text = fearCard.cardName;
         pointTMP.text = fearCard.point.ToString();
         descriptionTMP.text = fearCard.description;
         background.sprite = fearCard.background;
@@ -47,6 +44,11 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         back.sprite = fearCard.back;
 
         originalParent = originTransform;
+    }
+
+    public void UpdatePoint(int point)
+    {
+        pointTMP.text = point.ToString();
     }
 
     public void OnBeginDrag(PointerEventData eventData)

@@ -13,14 +13,14 @@ public class FearCard
     public int point;
 
     public string description;
-    //public FearCardSO fearCardData;
+    public FearCardSO fearCardData;
     public bool isUsed;
 
-    //public FearCard( FearCardSO fearCardData )
-    //{
-    //    this.fearCardData = fearCardData;
-    //    this.isUsed = false;
-    //}
+    public FearCard(FearCardSO fearCardData)
+    {
+        this.fearCardData = fearCardData;
+        this.isUsed = false;
+    }
 
     public FearCard(string name, Sprite background, Sprite art, Sprite back, int point, string description)
     {
