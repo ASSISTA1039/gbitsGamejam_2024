@@ -12,7 +12,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private bool isSnappingToTarget = false; // ??????????????????????
     public Vector3 targetPosition;
     public TextMeshProUGUI pointTMP;
-    public TextMeshProUGUI descriptionTMP;
 
     public Image background;
     public Image artSprite;
@@ -26,7 +25,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     private void Awake()
     {
         pointTMP = transform.Find("Front/Point/Text").GetComponent<TextMeshProUGUI>();
-        descriptionTMP = transform.Find("Front/Description/Text").GetComponent<TextMeshProUGUI>();
         background = transform.Find("Front/BackGround").GetComponent<Image>();
         artSprite = transform.Find("Front/ImageMask/Image").GetComponent<Image>();
         back = transform.Find("Back").GetComponent<Image>();
@@ -38,7 +36,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         card = fearCard;
         pointTMP.text = fearCard.point.ToString();
-        descriptionTMP.text = fearCard.description;
         background.sprite = fearCard.background;
         artSprite.sprite = fearCard.artSprite;
         back.sprite = fearCard.back;
@@ -51,11 +48,16 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         pointTMP.text = point.ToString();
     }
 
+    public void UpdateSprite(Sprite background, Sprite art)
+    {
+        this.background.sprite = background;
+        this.artSprite.sprite = art;
+
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
-        //originalPosition = transform.position; // ????????????????????
-        //originalParent = transform.parent; // ??????????????
-        //transform.SetParent(parentCanvas.transform); // ????????Canvas????????????
+
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -83,15 +85,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
     {
         transform.SetParent(originalParent); // ??????????
         transform.position = originalParent.position;
-        //cardTun = gameObject.GetComponent<CardTun>();
-        //if (cardTun != null)
-        //{
-        //    cardTun.StartFront();
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("?????????????????? CardTun ????");
-        //}
     }
 
     public void SnapToTarget(Transform areaTransform)
@@ -99,15 +92,6 @@ public class FearCardUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         // ??????????????
         areaParent = areaTransform;
         isSnappingToTarget = true;
-        
-        //if (cardTun != null)
-        //{
-        //    cardTun.StartBack();
-        //}
-        //else
-        //{
-        //    Debug.LogWarning("?????????????????? CardTun ????");
-        //}
     }
 
     public void ResetPosition()

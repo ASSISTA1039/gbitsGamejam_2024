@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Player : ICardManager
@@ -7,7 +8,6 @@ public class Player : ICardManager
     public string name;
     private List<FearCard> handingCards = new List<FearCard>();
     private List<GameItem> items = new List<GameItem>();
-    private List<FearCard> usedCards = new List<FearCard>();
 
     private int fearValue = 0;
     //private bool isBanned = false;
@@ -19,12 +19,12 @@ public class Player : ICardManager
     }
     public void AddCard(FearCard card)
     {
-        card.isUsed = false;
         handingCards.Add(card);
     }
 
     public void InitCards(List<FearCard> deck)
     {
+        deck = deck.OrderBy(card => card.point).ToList();
         handingCards.Clear();
         foreach (FearCard card in deck)
         {

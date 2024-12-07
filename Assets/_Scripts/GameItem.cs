@@ -166,7 +166,6 @@ public class ForceChangeCardItem : GameItem
     public override List<FearCard> Use(Player player, Player monster, FearCard playerCard, FearCard monsterCard, TextMeshProUGUI context)
     {
         List<FearCard> monsterDeck = monster.GetCards();
-        monsterDeck.Add(monsterCard); // �ѵ�ǰ���ƷŻؿ���
         monsterCard = monsterDeck[Random.Range(0, monsterDeck.Count)]; // ���˻��¿�
         displayString = $"{player.name}使用鬼手道具，{monster.name}换成了新卡：{monsterCard.cardName}, 吓人值：{monsterCard.point}";
 

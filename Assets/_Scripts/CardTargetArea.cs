@@ -70,4 +70,9 @@ public class CardTargetArea : MonoBehaviour
     {
         readyToUseCardUI.UpdatePoint(card.point);
     }
+
+    public void UpdateSprite(FearCard card)
+    {
+        readyToUseCardUI.UpdateSprite(card.background, card.artSprite);
+    }
 }

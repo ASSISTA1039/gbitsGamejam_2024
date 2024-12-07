@@ -18,4 +18,7 @@ MonoBehaviour:
   back: {fileID: 21300000, guid: d72e89fa49690423a8ea4edceb46c016, type: 2}
   minpoint: 5
   maxpoint: 6
-  description: Description 3
+  musicFX: {fileID: 0}
+  victoryDescription: "\u6211\u4E5F\u7ED9\u4F60\u773C\u775B\u4E0A\u5212\u4E00\u9053\u7F8E\u4E3D\u7684\u4F24\u75A4\u5427\u2026\u2026"
+  defeatDescription: "\u628A\u4F60\u8FD9\u5F20\u602A\u8138\u62FF\u5F00\uFF01"
+  tieDescription: "\u8FD9\u6B21\u9976\u4E86\u4F60\uFF0C\u4E0B\u6B21\u6CA1\u8FD9\u4E48\u5BB9\u6613\u3002"

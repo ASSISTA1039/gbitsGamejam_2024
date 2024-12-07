@@ -92,7 +92,7 @@ public class CardGeneratorWindow : EditorWindow
             // 设置卡牌描述
             if (i < descriptions.Length)
             {
-                newCard.description = descriptions[i];
+                newCard.victoryDescription = descriptions[i];
             }
 
             // 保存为.asset文件
