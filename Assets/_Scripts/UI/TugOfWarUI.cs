@@ -8,22 +8,38 @@ public class TugOfWarUI : MonoBehaviour
     public RectTransform monsterBar;  // ��ɫ����
     public float totalWidth = 1920; // �ܿ���
 
-    public float aScore = 4f;
-    public float bScore = 4f;
+    public float girlScore = 4f;
+    public float monsterScore = 4f;
     private float totalScore = 8f;
     void Start()
     {
-        UpdateBars(aScore, bScore);
+        UpdateBars(girlScore, monsterScore);
     }
 
-    public void UpdateBars(float playerScore, float monsterScore)
+    public void UpdateBars(float monsterScore, float girlScore)
     {
-        aScore = playerScore;
-        bScore = monsterScore;
+        this.monsterScore = monsterScore;
+        this.girlScore = girlScore;
 
-        float girlWidth = (aScore / totalScore) * totalWidth;
-        float monsterWidth = (bScore / totalScore) * totalWidth;
+        float monsterWidth = (this.monsterScore / totalScore) * totalWidth;
+        float girlWidth = (this.girlScore / totalScore) * totalWidth;
         if(girlWidth < monsterWidth)
+        {
+            girlBar.transform.SetAsFirstSibling();
+        }
+        else
+        {
+            monsterBar.transform.SetAsFirstSibling();
+        }
+
+        StartCoroutine(SmoothUpdate(girlWidth, monsterWidth));
+    }
+
+    public void UpdateBars(float diff)//梦兽的恐惧值减去小女孩的恐惧值后的差值
+    {
+        float monsterWidth = ((this.monsterScore - diff) / totalScore) * totalWidth;
+        float girlWidth = ((this.girlScore + diff) / totalScore) * totalWidth;
+        if (girlWidth < monsterWidth)
         {
             girlBar.transform.SetAsFirstSibling();
         }

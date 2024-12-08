@@ -180,7 +180,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5236\u4F5C\u4EBA\u540D\u5355\uFF1A\n\u5218\u5F66\u535A-\u7B56\u5212\nRun-\u7B56\u5212\u4EE5\u53CAui\n\u4E09\u65E5\u6708-\u7A0B\u5E8F\n\u4E4C\u6816-\u7F8E\u672F"
+  m_text: "\u5236\u4F5C\u4EBA\u540D\u5355\uFF1A\n\u5218\u5F66\u535A-\u7B56\u5212\nRun-\u7B56\u5212\u4EE5\u53CAui\n\u4E09\u65E5\u6708-\u7A0B\u5E8F\n\u4E4C\u6816-\u7F8E\u672F\n\u6954\u5F62-\u7F8E\u672F"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: b863f07154f4d494981442a7ea747850, type: 2}
   m_sharedMaterial: {fileID: -5541498820843133955, guid: b863f07154f4d494981442a7ea747850,
@@ -346,6 +346,7 @@ GameObject:
   - component: {fileID: 339941147}
   - component: {fileID: 339941149}
   - component: {fileID: 339941148}
+  - component: {fileID: 339941150}
   m_Layer: 5
   m_Name: BackGround
   m_TagString: Untagged
@@ -410,6 +411,27 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 339941146}
   m_CullTransparentMesh: 1
+--- !u!95 &339941150
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339941146}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8ecf5845433a24c308f59e7e07860b67, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &354073731
 GameObject:
   m_ObjectHideFlags: 0
@@ -507,6 +529,7 @@ MonoBehaviour:
   exitButton: {fileID: 0}
   aboutPanel: {fileID: 0}
   cursor: {fileID: 0}
+  bgm: {fileID: 0}
   videoPlayer: {fileID: 1316306881}
   rawImage: {fileID: 1316306882}
   startClip: {fileID: 32900000, guid: 06b01951fe2c2df4f85d2c485574d114, type: 3}
@@ -2338,7 +2361,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1678638533
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2714,8 +2737,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 435, y: 291}
-  m_SizeDelta: {x: 209.375, y: 212.5}
+  m_AnchoredPosition: {x: 380, y: 238}
+  m_SizeDelta: {x: 59.3551, y: 60.241}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2045500379
 MonoBehaviour:

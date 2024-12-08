@@ -13,6 +13,7 @@ public class StartMenuManager : MonoBehaviour
     public GameObject aboutPanel;  // ���ڵ�������
     public Sprite cursor;
 
+    public AudioSource bgm;
     public VideoPlayer videoPlayer; // 用于播放视频
     public RawImage rawImage; // 显示视频的RawImage
     public VideoClip startClip;     // 开场视频
@@ -30,8 +31,8 @@ public class StartMenuManager : MonoBehaviour
         aboutButton.onClick.AddListener(OnAboutButtonClicked);
 
         aboutPanel = transform.Find("AboutPanel").gameObject;
-        // ��ʼ��ʱ���ع��ڵ�������
         aboutPanel.SetActive(false);
+        bgm = transform.Find("BGM").GetComponent<AudioSource>();
     }
 
     // �����ʼ��ť��������һ������
@@ -69,6 +70,7 @@ public class StartMenuManager : MonoBehaviour
     // 播放视频的通用方法
     private void PlayVideo(VideoClip clip)
     {
+        bgm.Stop();
         isVideoPlayed = false;
         // 设置 VideoPlayer 的视频资源
         videoPlayer.clip = clip;

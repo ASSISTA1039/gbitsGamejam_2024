@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 6496959858284613071}
   - component: {fileID: 5402052278296837585}
   - component: {fileID: 1249586611425950473}
+  - component: {fileID: 2804421940021931843}
   - component: {fileID: 1545084461752181237}
   - component: {fileID: 5709183167121554836}
-  - component: {fileID: 2804421940021931843}
   m_Layer: 5
   m_Name: ItemTemplete
   m_TagString: Item
@@ -74,6 +74,20 @@ MonoBehaviour:
   mCardState: 0
   mTime: 0.3
   isActive: 0
+--- !u!114 &2804421940021931843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38972254633941283}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6450cd9b6aa44d54fa2db024ac890735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  header: 
+  content: 
 --- !u!58 &1545084461752181237
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -136,20 +150,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &2804421940021931843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 38972254633941283}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6450cd9b6aa44d54fa2db024ac890735, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  header: 
-  content: 
 --- !u!1 &526890395612592280
 GameObject:
   m_ObjectHideFlags: 0
